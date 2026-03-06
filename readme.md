@@ -4,6 +4,8 @@ A collection of reusable utility classes and helper methods for Java application
 
 This library provides lightweight utilities designed to simplify common development tasks such as reflection, casting, string handling, and other common operations. Many utilities internally use caching where appropriate to improve performance and reduce repeated computation.
 
+---
+
 ## Features
 
 - Lightweight utility classes
@@ -12,6 +14,8 @@ This library provides lightweight utilities designed to simplify common developm
 - Performance-focused utilities
 - Internal caching for frequently accessed operations
 - Designed for reuse across multiple projects
+
+---
 
 ## Installation
 
