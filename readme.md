@@ -18,7 +18,6 @@ This library provides lightweight utilities designed to simplify common developm
 Add the dependency to your Maven project:
 
 ```xml
-
 <dependency>
     <groupId>io.github.trae</groupId>
     <artifactId>utilities</artifactId>
