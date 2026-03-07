@@ -8,7 +8,7 @@ import java.util.Arrays;
  * <p>This class provides convenience methods for creating new instances of a class
  * using reflection while reducing repetitive boilerplate code.
  */
-public class UtilClass {
+public final class UtilClass {
 
     /**
      * Creates a new instance of the specified class using reflection.

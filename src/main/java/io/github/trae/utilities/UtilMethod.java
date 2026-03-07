@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
  * <p>This class simplifies method invocation using reflection while performing
  * basic validation and accessibility handling.
  */
-public class UtilMethod {
+public final class UtilMethod {
 
     /**
      * Invokes the specified method on the given instance using reflection.

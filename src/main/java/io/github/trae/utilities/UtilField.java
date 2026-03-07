@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
  * <p>This class provides helper methods for safely reading and writing
  * field values using reflection while performing validation and type checking.
  */
-public class UtilField {
+public final class UtilField {
 
     /**
      * Sets the value of a field on a given instance using reflection.
