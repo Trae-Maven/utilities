@@ -1,5 +1,7 @@
 package io.github.trae.utilities;
 
+import lombok.experimental.UtilityClass;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -12,6 +14,7 @@ import java.util.Base64;
  * <p>Encoder and decoder instances are cached as static finals — they are
  * thread-safe and reused across all calls.</p>
  */
+@UtilityClass
 public final class UtilBase64 {
 
     /**
@@ -23,6 +26,10 @@ public final class UtilBase64 {
      * Cached thread-safe Base64 decoder instance.
      */
     private static final Base64.Decoder DECODER = Base64.getDecoder();
+
+    // =============================
+    // ENCODE
+    // =============================
 
     /**
      * Encode a byte array to Base64 bytes.
@@ -63,6 +70,10 @@ public final class UtilBase64 {
     public static String encodeToString(final String input) {
         return encodeToString(input.getBytes(StandardCharsets.UTF_8));
     }
+
+    // =============================
+    // DECODE
+    // =============================
 
     /**
      * Decode Base64 bytes to raw bytes.

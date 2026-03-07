@@ -1,8 +1,11 @@
 package io.github.trae.utilities;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * String utility methods.
  */
+@UtilityClass
 public final class UtilString {
 
     /**

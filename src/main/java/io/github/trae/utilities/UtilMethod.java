@@ -1,5 +1,7 @@
 package io.github.trae.utilities;
 
+import lombok.experimental.UtilityClass;
+
 import java.lang.reflect.Method;
 
 /**
@@ -8,6 +10,7 @@ import java.lang.reflect.Method;
  * <p>This class simplifies method invocation using reflection while performing
  * basic validation and accessibility handling.
  */
+@UtilityClass
 public final class UtilMethod {
 
     /**

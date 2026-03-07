@@ -1,5 +1,7 @@
 package io.github.trae.utilities;
 
+import lombok.experimental.UtilityClass;
+
 import java.lang.reflect.Field;
 
 /**
@@ -8,6 +10,7 @@ import java.lang.reflect.Field;
  * <p>This class provides helper methods for safely reading and writing
  * field values using reflection while performing validation and type checking.
  */
+@UtilityClass
 public final class UtilField {
 
     /**

@@ -1,10 +1,14 @@
 package io.github.trae.utilities;
 
+import lombok.experimental.UtilityClass;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Cryptographic hashing and verification utility.
@@ -12,10 +16,29 @@ import java.security.NoSuchAlgorithmException;
  * <p>Provides methods for hashing (SHA-256, SHA-512, etc.), HMAC computation,
  * hex encoding/decoding, and constant-time hash verification.</p>
  *
+ * <p>{@link MessageDigest} and {@link Mac} instances are cached as prototypes
+ * and cloned per call, avoiding repeated provider lookups while remaining
+ * thread-safe.</p>
+ *
  * <p>All verification methods use {@link MessageDigest#isEqual(byte[], byte[])}
  * for constant-time comparison to prevent timing side-channel attacks.</p>
  */
+@UtilityClass
 public final class UtilHash {
+
+    /**
+     * Cached MessageDigest prototypes keyed by algorithm name.
+     */
+    private static final ConcurrentHashMap<String, MessageDigest> MESSAGE_DIGEST_CACHE_MAP = new ConcurrentHashMap<>();
+
+    /**
+     * Cached Mac prototypes keyed by algorithm name.
+     */
+    private static final ConcurrentHashMap<String, Mac> MAC_CACHE_MAP = new ConcurrentHashMap<>();
+
+    // =============================
+    // HASH
+    // =============================
 
     /**
      * Hash a byte array using the specified algorithm.
@@ -23,14 +46,10 @@ public final class UtilHash {
      * @param algorithm the hash algorithm (e.g. "SHA-256", "SHA-512")
      * @param bytes     the input bytes to hash
      * @return the raw hash bytes
-     * @throws IllegalArgumentException if the algorithm is not supported
+     * @throws IllegalStateException if the algorithm is not supported
      */
     public static byte[] hashToBytes(final String algorithm, final byte[] bytes) {
-        try {
-            return MessageDigest.getInstance(algorithm).digest(bytes);
-        } catch (final NoSuchAlgorithmException e) {
-            throw new IllegalArgumentException("Unsupported algorithm: " + algorithm, e);
-        }
+        return getMessageDigest(algorithm).digest(bytes);
     }
 
     /**
@@ -66,8 +85,13 @@ public final class UtilHash {
         return hashToString(algorithm, string.getBytes(StandardCharsets.UTF_8));
     }
 
+    // =============================
+    // VERIFY
+    // =============================
+
     /**
-     * Verify a plain byte array against a stored hash using constant-time comparison.
+     * Verify a plain byte array against a stored hash using
+     * constant-time comparison to prevent timing attacks.
      *
      * @param algorithm   the hash algorithm used to produce the stored hash
      * @param plainBytes  the plain input bytes to verify
@@ -79,7 +103,8 @@ public final class UtilHash {
     }
 
     /**
-     * Verify a plain string against a stored hex hash using constant-time comparison.
+     * Verify a plain string against a stored hex hash using
+     * constant-time comparison to prevent timing attacks.
      *
      * @param algorithm    the hash algorithm used to produce the stored hash
      * @param plainString  the plain input string to verify
@@ -93,17 +118,23 @@ public final class UtilHash {
         return MessageDigest.isEqual(storedBytes, computed);
     }
 
+    // =============================
+    // HMAC
+    // =============================
+
     /**
-     * Compute an HMAC using the specified algorithm and return the result as a Base64 string.
+     * Compute an HMAC and return the result as a Base64 string.
      *
      * @param algorithm the HMAC algorithm (e.g. "HmacSHA256", "HmacSHA512")
      * @param key       the HMAC secret key
      * @param input     the input string to authenticate
      * @return the HMAC result as a Base64-encoded string
+     * @throws IllegalStateException if the algorithm is not supported
+     *                               or the key is invalid
      */
     public static String hmac(final String algorithm, final String key, final String input) {
         try {
-            final Mac mac = Mac.getInstance(algorithm);
+            final Mac mac = getMac(algorithm);
 
             mac.init(new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), algorithm));
 
@@ -115,11 +146,15 @@ public final class UtilHash {
         }
     }
 
+    // =============================
+    // HEX
+    // =============================
+
     /**
      * Encode a byte array as a lowercase hex string.
      *
-     * <p>Uses {@link Character#forDigit(int, int)} for fast conversion
-     * without format string overhead.</p>
+     * <p>Uses {@link Character#forDigit(int, int)} for fast nibble-level
+     * conversion without format string overhead.</p>
      *
      * @param bytes the bytes to encode
      * @return the lowercase hex string (length = bytes.length * 2)
@@ -142,7 +177,7 @@ public final class UtilHash {
      * @return the decoded bytes
      * @throws IllegalArgumentException if the hex string has odd length
      */
-    private static byte[] fromHex(final String hex) {
+    public static byte[] fromHex(final String hex) {
         final int len = hex.length();
         if (len % 2 != 0) {
             throw new IllegalArgumentException("Invalid hex string");
@@ -155,5 +190,57 @@ public final class UtilHash {
         }
 
         return out;
+    }
+
+    // =============================
+    // INTERNAL
+    // =============================
+
+    /**
+     * Returns a thread-safe {@link MessageDigest} instance for the given
+     * algorithm. A prototype is cached on first access and cloned on
+     * each subsequent call to avoid provider lookup overhead.
+     *
+     * @param algorithm the digest algorithm name
+     * @return a fresh, cloned MessageDigest instance
+     * @throws IllegalStateException if the algorithm is not supported
+     *                               or cloning fails
+     */
+    private static MessageDigest getMessageDigest(final String algorithm) {
+        try {
+            return UtilJava.cast(MessageDigest.class, MESSAGE_DIGEST_CACHE_MAP.computeIfAbsent(algorithm.toUpperCase(Locale.ROOT), key -> {
+                try {
+                    return MessageDigest.getInstance(key);
+                } catch (final NoSuchAlgorithmException e) {
+                    throw new IllegalStateException("Unsupported MessageDigest algorithm: %s".formatted(key), e);
+                }
+            }).clone());
+        } catch (final CloneNotSupportedException e) {
+            throw new IllegalStateException("MessageDigest does not support cloning: %s".formatted(algorithm), e);
+        }
+    }
+
+    /**
+     * Returns a thread-safe {@link Mac} instance for the given algorithm.
+     * A prototype is cached on first access and cloned on each subsequent
+     * call to avoid provider lookup overhead.
+     *
+     * @param algorithm the MAC algorithm name
+     * @return a fresh, cloned Mac instance
+     * @throws IllegalStateException if the algorithm is not supported
+     *                               or cloning fails
+     */
+    private static Mac getMac(final String algorithm) {
+        try {
+            return UtilJava.cast(Mac.class, MAC_CACHE_MAP.computeIfAbsent(algorithm.toUpperCase(Locale.ROOT), key -> {
+                try {
+                    return Mac.getInstance(key);
+                } catch (final NoSuchAlgorithmException e) {
+                    throw new IllegalStateException("Unsupported Mac algorithm: %s".formatted(key), e);
+                }
+            }).clone());
+        } catch (final CloneNotSupportedException e) {
+            throw new IllegalStateException("Mac does not support cloning: %s".formatted(algorithm), e);
+        }
     }
 }

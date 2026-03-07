@@ -1,5 +1,7 @@
 package io.github.trae.utilities;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -7,6 +9,7 @@ import java.util.function.Consumer;
 /**
  * General-purpose Java utility methods for safe casting and collection/map initialization.
  */
+@UtilityClass
 public final class UtilJava {
 
     /**

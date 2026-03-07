@@ -1,5 +1,7 @@
 package io.github.trae.utilities;
 
+import lombok.experimental.UtilityClass;
+
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
@@ -9,6 +11,7 @@ import java.util.Arrays;
  * <p>This class provides convenience methods for creating new instances of a class
  * using reflection while reducing repetitive boilerplate code.
  */
+@UtilityClass
 public final class UtilClass {
 
     /**
