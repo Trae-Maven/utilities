@@ -10,7 +10,7 @@ public final class UtilJava {
         if ((clazz != null && object != null) && clazz.isInstance(object)) {
             try {
                 return clazz.cast(object);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException("Failed to cast object to %s".formatted(clazz.getName()), e);
             }
         }
