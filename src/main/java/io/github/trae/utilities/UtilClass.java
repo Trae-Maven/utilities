@@ -1,5 +1,6 @@
 package io.github.trae.utilities;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
 /**
@@ -31,9 +32,21 @@ public final class UtilClass {
      */
     public static <T> T create(final Class<T> type, final Object... args) throws Exception {
         if (args != null && args.length > 0) {
-            return type.getConstructor(Arrays.stream(args).map(Object::getClass).toArray(Class[]::new)).newInstance(args);
+            final Constructor<T> declaredConstructor = type.getDeclaredConstructor(Arrays.stream(args).map(Object::getClass).toArray(Class[]::new));
+
+            declaredConstructor.trySetAccessible();
+
+            return declaredConstructor.newInstance(args);
         }
 
-        return type.getDeclaredConstructor().newInstance();
+        final Constructor<T> declaredConstructor = type.getDeclaredConstructor();
+
+        declaredConstructor.trySetAccessible();
+
+        return declaredConstructor.newInstance();
+    }
+
+    public static <T> T create(final Class<T> type) throws Exception {
+        return create(type, new Object[0]);
     }
 }
