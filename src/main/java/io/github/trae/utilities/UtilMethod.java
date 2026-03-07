@@ -31,14 +31,18 @@ public final class UtilMethod {
             throw new IllegalArgumentException("Instance cannot be null.");
         }
 
-        if (args == null) {
-            throw new IllegalArgumentException("Instance cannot be null.");
-        }
-
         // Try to allow access to private/protected methods
         method.trySetAccessible();
 
         // Invoke the method with the provided arguments
-        method.invoke(instance, args);
+        if (args != null && args.length > 0) {
+            method.invoke(instance, args);
+        } else {
+            method.invoke(instance);
+        }
+    }
+
+    public static void invoke(final Method method, final Object instance) throws Exception {
+        invoke(method, instance, new Object[0]);
     }
 }

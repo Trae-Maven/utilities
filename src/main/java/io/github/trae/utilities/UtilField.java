@@ -69,15 +69,7 @@ public final class UtilField {
         final Object value = field.get(instance);
 
         if (!(type.isInstance(value))) {
-            throw new IllegalStateException(
-                    "Instance %s field %s has value type %s, expected %s."
-                            .formatted(
-                                    instance.getClass().getName(),
-                                    field.getName(),
-                                    value == null ? "null" : value.getClass().getName(),
-                                    type.getName()
-                            )
-            );
+            throw new IllegalStateException("Instance %s field %s has value type %s, expected %s.".formatted(instance.getClass().getName(), field.getName(), value == null ? "null" : value.getClass().getName(), type.getName()));
         }
 
         return UtilJava.cast(type, value);
