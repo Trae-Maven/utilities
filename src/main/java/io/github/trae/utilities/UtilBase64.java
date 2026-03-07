@@ -38,6 +38,10 @@ public class UtilBase64 {
      * @return the Base64-encoded bytes
      */
     public static byte[] encodeToBytes(final byte[] input) {
+        if (input == null) {
+            throw new IllegalArgumentException("Input cannot be null.");
+        }
+
         return ENCODER.encode(input);
     }
 
@@ -48,6 +52,10 @@ public class UtilBase64 {
      * @return the Base64-encoded bytes
      */
     public static byte[] encodeToBytes(final String input) {
+        if (input == null) {
+            throw new IllegalArgumentException("Input cannot be null.");
+        }
+
         return encodeToBytes(input.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -58,6 +66,10 @@ public class UtilBase64 {
      * @return the Base64-encoded string
      */
     public static String encodeToString(final byte[] input) {
+        if (input == null) {
+            throw new IllegalArgumentException("Input cannot be null.");
+        }
+
         return ENCODER.encodeToString(input);
     }
 
@@ -68,6 +80,10 @@ public class UtilBase64 {
      * @return the Base64-encoded string
      */
     public static String encodeToString(final String input) {
+        if (input == null) {
+            throw new IllegalArgumentException("Input cannot be null.");
+        }
+
         return encodeToString(input.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -82,6 +98,10 @@ public class UtilBase64 {
      * @return the decoded raw bytes
      */
     public static byte[] decodeToBytes(final byte[] input) {
+        if (input == null) {
+            throw new IllegalArgumentException("Input cannot be null.");
+        }
+
         return DECODER.decode(input);
     }
 
@@ -92,6 +112,10 @@ public class UtilBase64 {
      * @return the decoded raw bytes
      */
     public static byte[] decodeToBytes(final String input) {
+        if (input == null) {
+            throw new IllegalArgumentException("Input cannot be null.");
+        }
+
         return decodeToBytes(input.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -112,6 +136,10 @@ public class UtilBase64 {
      * @return the decoded string
      */
     public static String decodeToString(final String input) {
+        if (input == null) {
+            throw new IllegalArgumentException("Input cannot be null.");
+        }
+
         return decodeToString(input.getBytes(StandardCharsets.UTF_8));
     }
 }

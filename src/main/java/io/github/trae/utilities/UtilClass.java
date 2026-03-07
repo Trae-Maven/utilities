@@ -34,6 +34,10 @@ public class UtilClass {
      *                   </ul>
      */
     public static <T> T create(final Class<T> type, final Object... args) throws Exception {
+        if (type == null) {
+            throw new IllegalArgumentException("Type cannot be null.");
+        }
+
         if (args != null && args.length > 0) {
             final Constructor<T> declaredConstructor = type.getDeclaredConstructor(Arrays.stream(args).map(Object::getClass).toArray(Class[]::new));
 

@@ -207,6 +207,10 @@ public class UtilHash {
      *                               or cloning fails
      */
     private static MessageDigest getMessageDigest(final String algorithm) {
+        if (algorithm == null) {
+            throw new IllegalArgumentException("Algorithm cannot be null.");
+        }
+
         try {
             return UtilJava.cast(MessageDigest.class, MESSAGE_DIGEST_CACHE_MAP.computeIfAbsent(algorithm.toUpperCase(Locale.ROOT), key -> {
                 try {
@@ -231,6 +235,10 @@ public class UtilHash {
      *                               or cloning fails
      */
     private static Mac getMac(final String algorithm) {
+        if (algorithm == null) {
+            throw new IllegalArgumentException("Algorithm cannot be null.");
+        }
+
         try {
             return UtilJava.cast(Mac.class, MAC_CACHE_MAP.computeIfAbsent(algorithm.toUpperCase(Locale.ROOT), key -> {
                 try {

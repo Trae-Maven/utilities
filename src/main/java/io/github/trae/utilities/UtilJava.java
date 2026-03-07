@@ -43,6 +43,14 @@ public class UtilJava {
      * @return the populated collection
      */
     public static <T extends Collection<?>> T createCollection(final T collection, final Consumer<T> consumer) {
+        if (collection == null) {
+            throw new IllegalArgumentException("Collection cannot be null.");
+        }
+
+        if (consumer == null) {
+            throw new IllegalArgumentException("Consumer cannot be null.");
+        }
+
         consumer.accept(collection);
         return collection;
     }
@@ -57,6 +65,14 @@ public class UtilJava {
      * @return the populated map
      */
     public static <T extends Map<?, ?>> T createMap(final T map, final Consumer<T> consumer) {
+        if (map == null) {
+            throw new IllegalArgumentException("Map cannot be null.");
+        }
+
+        if (consumer == null) {
+            throw new IllegalArgumentException("Consumer cannot be null.");
+        }
+
         consumer.accept(map);
         return map;
     }
@@ -69,6 +85,14 @@ public class UtilJava {
      * @param <T>        the collection type
      */
     public static <T extends Collection<?>> void updateCollection(final T collection, final Consumer<T> consumer) {
+        if (collection == null) {
+            throw new IllegalArgumentException("Collection cannot be null.");
+        }
+
+        if (consumer == null) {
+            throw new IllegalArgumentException("Consumer cannot be null.");
+        }
+
         consumer.accept(collection);
     }
 
@@ -80,6 +104,14 @@ public class UtilJava {
      * @param <T>      the map type
      */
     public static <T extends Map<?, ?>> void updateMap(final T map, final Consumer<T> consumer) {
+        if (map == null) {
+            throw new IllegalArgumentException("Map cannot be null.");
+        }
+
+        if (consumer == null) {
+            throw new IllegalArgumentException("Consumer cannot be null.");
+        }
+
         consumer.accept(map);
     }
 }

@@ -59,6 +59,7 @@ public class UtilString {
 
         return CLEAN_CACHE.computeIfAbsent(key, k -> {
             final String replaced = k.replace("_", " ");
+
             return Arrays.stream(replaced.split("\\s+"))
                     .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
                     .collect(Collectors.joining(" "));
@@ -121,13 +122,9 @@ public class UtilString {
                 // Insert a space before an uppercase letter when it marks a new word boundary.
                 // A boundary exists when the previous char is lowercase ("helloWorld"),
                 // or when the next char is lowercase, and we're mid-acronym ("XMLParser").
-                if (index > 0
-                        && Character.isUpperCase(current)
-                        && !Character.isWhitespace(characters[index - 1])) {
-
+                if (index > 0 && Character.isUpperCase(current) && !(Character.isWhitespace(characters[index - 1]))) {
                     final boolean previousIsLower = Character.isLowerCase(characters[index - 1]);
-                    final boolean nextIsLower = index + 1 < characters.length
-                            && Character.isLowerCase(characters[index + 1]);
+                    final boolean nextIsLower = index + 1 < characters.length && Character.isLowerCase(characters[index + 1]);
 
                     if (previousIsLower || nextIsLower) {
                         builder.append(' ');
@@ -162,6 +159,14 @@ public class UtilString {
      * @return the formatted pair string
      */
     public static String pair(final String key, final String value) {
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null.");
+        }
+
+        if (value == null) {
+            throw new IllegalArgumentException("Value cannot be null.");
+        }
+
         return "%s: %s".formatted(key, value);
     }
 }

@@ -44,6 +44,10 @@ public class UtilFile {
      * @throws RuntimeException if the file cannot be read
      */
     public static List<String> read(final Path path) {
+        if (path == null) {
+            throw new IllegalArgumentException("Path cannot be null.");
+        }
+
         final Path normalizedPath = path.toAbsolutePath().normalize();
 
         final CachedFile cachedFile = CACHED_FILE_MAP.compute(normalizedPath, (__, existing) -> {
@@ -91,6 +95,10 @@ public class UtilFile {
      * @throws RuntimeException if the file cannot be opened or read
      */
     private static List<String> readFromDisk(final Path path) {
+        if (path == null) {
+            throw new IllegalArgumentException("Path cannot be null.");
+        }
+
         try (final FileChannel channel = FileChannel.open(path, StandardOpenOption.READ)) {
             final long size = channel.size();
 
