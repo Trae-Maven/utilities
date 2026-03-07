@@ -53,7 +53,7 @@ public final class UtilHash {
         }
     }
 
-    private static String toHex(final byte[] bytes) {
+    public static String toHex(final byte[] bytes) {
         final StringBuilder sb = new StringBuilder(bytes.length * 2);
 
         for (final byte b : bytes) {
