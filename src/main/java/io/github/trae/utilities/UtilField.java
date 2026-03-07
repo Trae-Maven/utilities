@@ -35,8 +35,8 @@ public class UtilField {
             throw new IllegalArgumentException("Value cannot be null.");
         }
 
-        // Allow access to private/protected fields
-        field.setAccessible(true);
+        // Try to allow access to private/protected fields
+        field.trySetAccessible();
 
         // Set the field value
         field.set(instance, value);

@@ -35,8 +35,8 @@ public class UtilMethod {
             throw new IllegalArgumentException("Instance cannot be null.");
         }
 
-        // Allow access to private/protected methods
-        method.setAccessible(true);
+        // Try to allow access to private/protected methods
+        method.trySetAccessible();
 
         // Invoke the method with the provided arguments
         method.invoke(instance, args);
