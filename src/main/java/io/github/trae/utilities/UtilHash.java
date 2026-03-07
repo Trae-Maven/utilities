@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * for constant-time comparison to prevent timing side-channel attacks.</p>
  */
 @UtilityClass
-public final class UtilHash {
+public class UtilHash {
 
     /**
      * Cached MessageDigest prototypes keyed by algorithm name.

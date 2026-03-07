@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
  * field values using reflection while performing validation and type checking.
  */
 @UtilityClass
-public final class UtilField {
+public class UtilField {
 
     /**
      * Sets the value of a field on a given instance using reflection.

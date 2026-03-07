@@ -20,25 +20,11 @@ This library provides lightweight utilities designed to simplify common developm
 - Reflective method invocation with accessibility handling
 - Safe type casting with null handling
 - Inline collection and map initialization helpers
-- String null/blank checking
+- Thread-safe string transformations with built-in caching (title-casing, delimiter stripping, camelCase expansion)
+- String null/blank checking and key-value pair formatting
 - Lightweight utility classes with no runtime dependencies
 - Designed for modern Java (Java 21+)
 - Performance-focused with internal caching
-
----
-
-## Utility Classes
-
-| Class | Description |
-|---|---|
-| `UtilFile` | Memory-mapped file reading with automatic cache invalidation |
-| `UtilBase64` | Base64 encoding and decoding for byte[] and String |
-| `UtilHash` | Cryptographic hashing, HMAC, hex encoding, and constant-time verification |
-| `UtilClass` | Reflective class instantiation via constructor resolution |
-| `UtilField` | Reflective field reading and writing with type validation |
-| `UtilMethod` | Reflective method invocation with accessibility handling |
-| `UtilJava` | Safe casting and inline collection/map initialization |
-| `UtilString` | String null/blank checking |
 
 ---
 
@@ -68,3 +54,18 @@ Add the dependency to your Maven project:
     <version>0.0.1</version>
 </dependency>
 ```
+
+---
+
+## Utility Classes
+
+| Class | Description |
+|---|---|
+| `UtilFile` | Memory-mapped file reading with automatic cache invalidation |
+| `UtilBase64` | Base64 encoding and decoding for byte[] and String |
+| `UtilHash` | Cryptographic hashing, HMAC, hex encoding, and constant-time verification |
+| `UtilClass` | Reflective class instantiation via constructor resolution |
+| `UtilField` | Reflective field reading and writing with type validation |
+| `UtilMethod` | Reflective method invocation with accessibility handling |
+| `UtilJava` | Safe casting and inline collection/map initialization |
+| `UtilString` | Thread-safe string transformations (title-casing, delimiter stripping, camelCase expansion) with caching |

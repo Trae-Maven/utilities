@@ -15,7 +15,7 @@ import java.util.Base64;
  * thread-safe and reused across all calls.</p>
  */
 @UtilityClass
-public final class UtilBase64 {
+public class UtilBase64 {
 
     /**
      * Cached thread-safe Base64 encoder instance.

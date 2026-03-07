@@ -10,7 +10,7 @@ import java.util.function.Consumer;
  * General-purpose Java utility methods for safe casting and collection/map initialization.
  */
 @UtilityClass
-public final class UtilJava {
+public class UtilJava {
 
     /**
      * Safely cast an object to the specified type.

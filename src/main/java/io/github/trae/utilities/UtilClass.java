@@ -12,7 +12,7 @@ import java.util.Arrays;
  * using reflection while reducing repetitive boilerplate code.
  */
 @UtilityClass
-public final class UtilClass {
+public class UtilClass {
 
     /**
      * Creates a new instance of the specified class using reflection.

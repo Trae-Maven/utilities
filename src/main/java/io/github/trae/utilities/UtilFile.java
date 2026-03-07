@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * the {@link MappedByteBuffer} size limit.</p>
  */
 @UtilityClass
-public final class UtilFile {
+public class UtilFile {
 
     /**
      * Path-keyed cache storing file contents alongside their last-modified timestamp.

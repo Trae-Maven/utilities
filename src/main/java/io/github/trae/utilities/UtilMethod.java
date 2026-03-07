@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  * basic validation and accessibility handling.
  */
 @UtilityClass
-public final class UtilMethod {
+public class UtilMethod {
 
     /**
      * Invokes the specified method on the given instance using reflection.
