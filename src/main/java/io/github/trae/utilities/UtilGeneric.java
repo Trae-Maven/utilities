@@ -1,6 +1,7 @@
 package io.github.trae.utilities;
 
 import io.github.trae.utilities.cache.CachedGenericKey;
+import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@UtilityClass
 public class UtilGeneric {
 
     private static final ConcurrentHashMap<CachedGenericKey, Class<?>> CACHE = new ConcurrentHashMap<>();
