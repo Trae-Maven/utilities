@@ -23,18 +23,18 @@ import java.util.function.Consumer;
  *
  * <p>Usage examples:</p>
  * <pre>{@code
- * // Fire-and-forget async POST
+ * // Fire-and-forget async POST with JSON
  * UtilHttp.dispatchAsynchronous(HttpMethod.POST, "https://api.example.com/users", "{\"name\":\"John\"}",
- *     null,
+ *     "application/json", null,
  *     response -> System.out.println("Created: " + response.statusCode()),
  *     Throwable::printStackTrace
  * );
  *
  * // Synchronous GET
- * HttpResponse<String> response = UtilHttp.supply(HttpMethod.GET, "https://api.example.com/users", null, null);
+ * HttpResponse<String> response = UtilHttp.supply(HttpMethod.GET, "https://api.example.com/users", null, null, null);
  *
  * // Async supply with chaining
- * UtilHttp.supplyAsynchronous(HttpMethod.GET, "https://api.example.com/users", null, null)
+ * UtilHttp.supplyAsynchronous(HttpMethod.GET, "https://api.example.com/users", null, null, null)
  *     .thenAccept(response -> System.out.println(response.body()));
  * }</pre>
  *
@@ -65,15 +65,16 @@ public class UtilHttp {
      * @param httpMethod      the HTTP method
      * @param url             the target URL
      * @param body            the request body (may be {@code null})
+     * @param contentType     the Content-Type header value (may be {@code null})
      * @param headers         header key-value pairs (may be {@code null})
      * @param successConsumer callback receiving the response on success (may be {@code null})
      * @param errorConsumer   callback receiving the exception on failure (may be {@code null})
      */
-    public static void dispatch(final HttpMethod httpMethod, final String url, final String body, final Map<String, String> headers, final Consumer<HttpResponse<String>> successConsumer, final Consumer<Throwable> errorConsumer) {
+    public static void dispatch(final HttpMethod httpMethod, final String url, final String body, final String contentType, final Map<String, String> headers, final Consumer<HttpResponse<String>> successConsumer, final Consumer<Throwable> errorConsumer) {
         validate(httpMethod, url);
 
         try {
-            final HttpResponse<String> httpResponse = httpClient.send(buildHttpRequest(httpMethod, url, body, headers), HttpResponse.BodyHandlers.ofString());
+            final HttpResponse<String> httpResponse = httpClient.send(buildHttpRequest(httpMethod, url, body, contentType, headers), HttpResponse.BodyHandlers.ofString());
 
             if (successConsumer != null) {
                 successConsumer.accept(httpResponse);
@@ -92,14 +93,15 @@ public class UtilHttp {
      * @param httpMethod      the HTTP method
      * @param url             the target URL
      * @param body            the request body (may be {@code null})
+     * @param contentType     the Content-Type header value (may be {@code null})
      * @param headers         header key-value pairs (may be {@code null})
      * @param successConsumer callback receiving the response on success (may be {@code null})
      * @param errorConsumer   callback receiving the exception on failure (may be {@code null})
      */
-    public static void dispatchAsynchronous(final HttpMethod httpMethod, final String url, final String body, final Map<String, String> headers, final Consumer<HttpResponse<String>> successConsumer, final Consumer<Throwable> errorConsumer) {
+    public static void dispatchAsynchronous(final HttpMethod httpMethod, final String url, final String body, final String contentType, final Map<String, String> headers, final Consumer<HttpResponse<String>> successConsumer, final Consumer<Throwable> errorConsumer) {
         validate(httpMethod, url);
 
-        httpClient.sendAsync(buildHttpRequest(httpMethod, url, body, headers), HttpResponse.BodyHandlers.ofString())
+        httpClient.sendAsync(buildHttpRequest(httpMethod, url, body, contentType, headers), HttpResponse.BodyHandlers.ofString())
                 .thenAccept(httpResponse -> {
                     if (successConsumer != null) {
                         successConsumer.accept(httpResponse);
@@ -116,18 +118,19 @@ public class UtilHttp {
     /**
      * Supplies the HTTP response synchronously. Blocks the calling thread.
      *
-     * @param httpMethod the HTTP method
-     * @param url        the target URL
-     * @param body       the request body (may be {@code null})
-     * @param headers    header key-value pairs (may be {@code null})
+     * @param httpMethod  the HTTP method
+     * @param url         the target URL
+     * @param body        the request body (may be {@code null})
+     * @param contentType the Content-Type header value (may be {@code null})
+     * @param headers     header key-value pairs (may be {@code null})
      * @return the HTTP response
      * @throws HttpException if the request fails for any reason
      */
-    public static HttpResponse<String> supply(final HttpMethod httpMethod, final String url, final String body, final Map<String, String> headers) {
+    public static HttpResponse<String> supply(final HttpMethod httpMethod, final String url, final String body, final String contentType, final Map<String, String> headers) {
         validate(httpMethod, url);
 
         try {
-            return httpClient.send(buildHttpRequest(httpMethod, url, body, headers), HttpResponse.BodyHandlers.ofString());
+            return httpClient.send(buildHttpRequest(httpMethod, url, body, contentType, headers), HttpResponse.BodyHandlers.ofString());
         } catch (final Exception e) {
             throw new HttpException("Request failed: %s %s".formatted(httpMethod.name(), url), e);
         }
@@ -136,16 +139,17 @@ public class UtilHttp {
     /**
      * Supplies the HTTP response asynchronously.
      *
-     * @param httpMethod the HTTP method
-     * @param url        the target URL
-     * @param body       the request body (may be {@code null})
-     * @param headers    header key-value pairs (may be {@code null})
+     * @param httpMethod  the HTTP method
+     * @param url         the target URL
+     * @param body        the request body (may be {@code null})
+     * @param contentType the Content-Type header value (may be {@code null})
+     * @param headers     header key-value pairs (may be {@code null})
      * @return a {@link CompletableFuture} that completes with the HTTP response
      */
-    public static CompletableFuture<HttpResponse<String>> supplyAsynchronous(final HttpMethod httpMethod, final String url, final String body, final Map<String, String> headers) {
+    public static CompletableFuture<HttpResponse<String>> supplyAsynchronous(final HttpMethod httpMethod, final String url, final String body, final String contentType, final Map<String, String> headers) {
         validate(httpMethod, url);
 
-        return httpClient.sendAsync(buildHttpRequest(httpMethod, url, body, headers), HttpResponse.BodyHandlers.ofString());
+        return httpClient.sendAsync(buildHttpRequest(httpMethod, url, body, contentType, headers), HttpResponse.BodyHandlers.ofString());
     }
 
     private static void validate(final HttpMethod httpMethod, final String url) {
@@ -162,8 +166,12 @@ public class UtilHttp {
         }
     }
 
-    private static HttpRequest buildHttpRequest(final HttpMethod httpMethod, final String url, final String body, final Map<String, String> headers) {
+    private static HttpRequest buildHttpRequest(final HttpMethod httpMethod, final String url, final String body, final String contentType, final Map<String, String> headers) {
         final HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(url)).timeout(defaultRequestTimeout);
+
+        if (!(UtilString.isEmpty(contentType))) {
+            builder.header("Content-Type", contentType);
+        }
 
         if (headers != null) {
             headers.forEach(builder::header);
