@@ -2,7 +2,9 @@
 
 A collection of reusable utility classes and helper methods for Java applications.
 
-This library provides lightweight utilities designed to simplify common development tasks such as safe casting, string handling, Base64 encoding, cryptographic hashing, high-performance file reading, generic type resolution, and reflective access. Many utilities internally use caching where appropriate to improve performance and reduce repeated computation.
+This library provides lightweight utilities designed to simplify common development tasks such as safe casting, string handling, Base64 encoding, cryptographic hashing, high-performance file reading, generic type resolution, reflective access, logging, and generic functional types. Many utilities internally use caching where appropriate to improve performance and reduce repeated computation.
+
+Built for modern Java (Java 21+).
 
 ---
 
@@ -23,17 +25,18 @@ This library provides lightweight utilities designed to simplify common developm
 - Inline collection and map initialization helpers
 - Thread-safe string transformations with built-in caching (title-casing, delimiter stripping, camelCase expansion)
 - String null/blank checking and key-value pair formatting
-- Lightweight utility classes with no runtime dependencies
-- Designed for modern Java (Java 21+)
+- Static logging wrapper around Google Flogger with configurable logger instance
+- Generic pair types (Pair, TriPair, QuadPair) for lightweight data grouping
+- Generic function types (Function, BiFunction, TriFunction, QuadFunction)
+- Generic consumer types (Consumer, BiConsumer, TriConsumer, QuadConsumer)
 - Performance-focused with internal caching
 
 ---
 
 ## Requirements
 
-Utilities has no external runtime dependencies.
+The following is only needed at compile time for annotation processing and is expected to already exist in your application:
 
-The following is only needed at compile time for annotation processing:
 ```xml
 <dependency>
     <groupId>org.projectlombok</groupId>
@@ -45,9 +48,32 @@ The following is only needed at compile time for annotation processing:
 
 ---
 
+## Built-in Dependencies
+
+Utilities includes several dependencies that are automatically included when you install the library.
+
+- [Google Flogger](https://github.com/google/flogger) – Fluent logging API used internally by `UtilLogger`.
+
+```xml
+<dependency>
+    <groupId>com.google.flogger</groupId>
+    <artifactId>flogger</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>com.google.flogger</groupId>
+    <artifactId>flogger-system-backend</artifactId>
+</dependency>
+```
+
+These dependencies are automatically included when installing Utilities and do not need to be added manually.
+
+---
+
 ## Installation
 
 Add the dependency to your Maven project:
+
 ```xml
 <dependency>
     <groupId>io.github.trae</groupId>
@@ -71,3 +97,25 @@ Add the dependency to your Maven project:
 | `UtilMethod` | Reflective method invocation with accessibility handling |
 | `UtilJava` | Safe casting and inline collection/map initialization |
 | `UtilString` | Thread-safe string transformations (title-casing, delimiter stripping, camelCase expansion) with caching |
+| `UtilLogger` | Static logging wrapper around Google Flogger with configurable logger instance |
+
+## Data Types
+
+| Class | Package | Description |
+|---|---|---|
+| `Pair` | `objects.pair` | A generic pair of two values |
+| `TriPair` | `objects.pair` | A generic pair of three values |
+| `QuadPair` | `objects.pair` | A generic pair of four values |
+
+## Functional Types
+
+| Interface | Package | Description |
+|---|---|---|
+| `Function` | `objects.function` | Accepts one argument, produces a result |
+| `BiFunction` | `objects.function` | Accepts two arguments, produces a result |
+| `TriFunction` | `objects.function` | Accepts three arguments, produces a result |
+| `QuadFunction` | `objects.function` | Accepts four arguments, produces a result |
+| `Consumer` | `objects.consumer` | Accepts one argument, returns no result |
+| `BiConsumer` | `objects.consumer` | Accepts two arguments, returns no result |
+| `TriConsumer` | `objects.consumer` | Accepts three arguments, returns no result |
+| `QuadConsumer` | `objects.consumer` | Accepts four arguments, returns no result |
