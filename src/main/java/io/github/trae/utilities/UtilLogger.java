@@ -2,6 +2,7 @@ package io.github.trae.utilities;
 
 import com.google.common.flogger.AbstractLogger;
 import com.google.common.flogger.FluentLogger;
+import io.github.trae.utilities.enums.Color;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.UtilityClass;
@@ -29,7 +30,7 @@ public class UtilLogger {
      * @param message the message to log
      */
     public static void severe(final String message) {
-        getLogger().atSevere().log("%s", message);
+        getLogger().atSevere().log("%s", formatMessage(message));
     }
 
     /**
@@ -38,7 +39,7 @@ public class UtilLogger {
      * @param message the message to log
      */
     public static void warning(final String message) {
-        getLogger().atWarning().log("%s", message);
+        getLogger().atWarning().log("%s", formatMessage(message));
     }
 
     /**
@@ -47,7 +48,7 @@ public class UtilLogger {
      * @param message the message to log
      */
     public static void info(final String message) {
-        getLogger().atInfo().log("%s", message);
+        getLogger().atInfo().log("%s", formatMessage(message));
     }
 
     /**
@@ -56,7 +57,7 @@ public class UtilLogger {
      * @param message the message to log
      */
     public static void config(final String message) {
-        getLogger().atConfig().log("%s", message);
+        getLogger().atConfig().log("%s", formatMessage(message));
     }
 
     /**
@@ -65,7 +66,7 @@ public class UtilLogger {
      * @param message the message to log
      */
     public static void fine(final String message) {
-        getLogger().atFine().log("%s", message);
+        getLogger().atFine().log("%s", formatMessage(message));
     }
 
     /**
@@ -74,7 +75,7 @@ public class UtilLogger {
      * @param message the message to log
      */
     public static void finer(final String message) {
-        getLogger().atFiner().log("%s", message);
+        getLogger().atFiner().log("%s", formatMessage(message));
     }
 
     /**
@@ -83,6 +84,22 @@ public class UtilLogger {
      * @param message the message to log
      */
     public static void finest(final String message) {
-        getLogger().atFinest().log("%s", message);
+        getLogger().atFinest().log("%s", formatMessage(message));
+    }
+
+    /**
+     * Translates color tags in the given string to ANSI escape codes.
+     *
+     * <p>Opening tags (e.g. {@code <green>}, {@code <light_red>}) are replaced
+     * with the corresponding ANSI code. Closing tags (e.g. {@code </green>},
+     * {@code </light_red>}) are replaced with a reset code. Tags are
+     * case-insensitive. A reset is appended at the end to ensure the
+     * terminal state is always cleaned up.</p>
+     *
+     * @param message the message containing color tags
+     * @return the message with tags replaced by ANSI codes
+     */
+    private static String formatMessage(final String message) {
+        return Color.translate(message);
     }
 }
