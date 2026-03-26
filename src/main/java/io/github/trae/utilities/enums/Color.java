@@ -26,8 +26,9 @@ public enum Color {
 
     // Shades
     BLACK("\033[30m"),
-    GRAY("\033[90m"),
-    LIGHT_GRAY("\033[37m"),
+    DARK_GRAY("\033[90m"),
+    GRAY("\033[37m"),
+    SILVER("\033[37;1m"),
     WHITE("\033[97m"),
 
     // Red
