@@ -1,5 +1,6 @@
 package io.github.trae.utilities;
 
+import com.google.common.flogger.AbstractLogger;
 import com.google.common.flogger.FluentLogger;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,8 +11,7 @@ import lombok.experimental.UtilityClass;
  * configurable logger instance shared across the application.
  *
  * <p>Defaults to {@link FluentLogger#forEnclosingClass()}. Call
- * {@link #setLogger(FluentLogger)} to replace with a custom logger
- * during initialization.</p>
+ * {@link #setLogger(AbstractLogger)} to replace with a custom logger * during initialization.</p>
  */
 @UtilityClass
 public class UtilLogger {
@@ -21,7 +21,7 @@ public class UtilLogger {
      */
     @Getter
     @Setter
-    private static FluentLogger logger = FluentLogger.forEnclosingClass();
+    private static AbstractLogger<?> logger = FluentLogger.forEnclosingClass();
 
     /**
      * Logs a {@link java.util.logging.Level#SEVERE SEVERE} message.
