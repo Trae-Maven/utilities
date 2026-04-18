@@ -36,6 +36,17 @@ public class UtilTime {
      * Formats a millisecond duration into a human-readable string using the best-fit {@link TimeUnit}.
      *
      * @param duration the duration in milliseconds
+     * @param trim     decimal places to include; {@code 0} produces whole numbers
+     * @return a formatted string such as {@code "5.0 minutes"}
+     */
+    public static String getTime(final long duration, final int trim) {
+        return TimeUnit.format(duration, trim);
+    }
+
+    /**
+     * Formats a millisecond duration into a human-readable string using the best-fit {@link TimeUnit}.
+     *
+     * @param duration the duration in milliseconds
      * @return a formatted string such as {@code "5 minutes"}
      */
     public static String getTime(final long duration) {
