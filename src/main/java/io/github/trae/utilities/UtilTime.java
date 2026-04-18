@@ -33,6 +33,16 @@ public class UtilTime {
     }
 
     /**
+     * Formats a millisecond duration into a human-readable string using the best-fit {@link TimeUnit}.
+     *
+     * @param duration the duration in milliseconds
+     * @return a formatted string such as {@code "5 minutes"}
+     */
+    public static String getTime(final long duration) {
+        return TimeUnit.format(duration, 0);
+    }
+
+    /**
      * Returns whether the required number of milliseconds has elapsed since {@code from}.
      *
      * @param from     the start timestamp in milliseconds ({@link System#currentTimeMillis()})
