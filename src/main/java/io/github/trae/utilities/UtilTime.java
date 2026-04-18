@@ -42,4 +42,15 @@ public class UtilTime {
     public static boolean elapsed(final long from, final long required) {
         return (System.currentTimeMillis() - from) >= required;
     }
+
+    /**
+     * Returns the number of milliseconds remaining until {@code duration} has elapsed since {@code systemTime}.
+     *
+     * @param systemTime the start timestamp in milliseconds ({@link System#currentTimeMillis()})
+     * @param duration   the total duration in milliseconds
+     * @return milliseconds remaining; negative if already elapsed
+     */
+    public static long getRemaining(final long systemTime, final long duration) {
+        return (systemTime + duration) - System.currentTimeMillis();
+    }
 }
