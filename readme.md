@@ -2,7 +2,7 @@
 
 A collection of reusable utility classes and helper methods for Java applications.
 
-This library provides lightweight utilities designed to simplify common development tasks such as safe casting, string handling, Base64 encoding, cryptographic hashing, high-performance file reading, generic type resolution, reflective access, logging, and generic functional types. Many utilities internally use caching where appropriate to improve performance and reduce repeated computation.
+This library provides lightweight utilities designed to simplify common development tasks such as safe casting, string handling, Base64 encoding, cryptographic hashing, high-performance file reading, generic type resolution, reflective access, logging, time formatting, and generic functional types. Many utilities internally use caching where appropriate to improve performance and reduce repeated computation.
 
 Built for modern Java (Java 21+).
 
@@ -26,6 +26,8 @@ Built for modern Java (Java 21+).
 - Thread-safe string transformations with built-in caching (title-casing, delimiter stripping, camelCase expansion)
 - String null/blank checking and key-value pair formatting
 - Static logging wrapper around Google Flogger with configurable logger instance
+- Human-readable duration formatting with best-fit unit resolution and configurable decimal precision
+- Elapsed time checks against a millisecond timestamp
 - Generic pair types (Pair, TriPair, QuadPair) for lightweight data grouping
 - Generic function types (Function, BiFunction, TriFunction, QuadFunction)
 - Generic consumer types (Consumer, BiConsumer, TriConsumer, QuadConsumer)
@@ -97,6 +99,7 @@ Add the dependency to your Maven project:
 | `UtilMethod` | Reflective method invocation with accessibility handling |
 | `UtilJava` | Safe casting and inline collection/map initialization |
 | `UtilString` | Thread-safe string transformations (title-casing, delimiter stripping, camelCase expansion) with caching |
+| `UtilTime` | Human-readable duration formatting and elapsed time checks |
 | `UtilLogger` | Static logging wrapper around Google Flogger with configurable logger instance |
 
 ## Data Types
