@@ -169,4 +169,36 @@ public class UtilString {
 
         return "%s: %s".formatted(key, value);
     }
+
+    /**
+     * Formats an integer value as a dollar amount without cents.
+     *
+     * <p>Examples:</p>
+     * <ul>
+     *   <li>{@code 5000000} → {@code "$5,000,000"}</li>
+     *   <li>{@code 1000} → {@code "$1,000"}</li>
+     * </ul>
+     *
+     * @param value the integer value to format
+     * @return the formatted dollar string
+     */
+    public static String formatToDollarByInteger(final int value) {
+        return "$%s".formatted(String.format("%,d", value));
+    }
+
+    /**
+     * Formats a double value as a dollar amount with two decimal places.
+     *
+     * <p>Examples:</p>
+     * <ul>
+     *   <li>{@code 5000000.0} → {@code "$5,000,000.00"}</li>
+     *   <li>{@code 1000.5} → {@code "$1,000.50"}</li>
+     * </ul>
+     *
+     * @param value the double value to format
+     * @return the formatted dollar string with cents
+     */
+    public static String formatToDollarByDouble(final double value) {
+        return "$%s".formatted(String.format("%,.2f", value));
+    }
 }
