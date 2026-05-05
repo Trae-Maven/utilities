@@ -75,7 +75,7 @@ public class UtilCollection {
                     }
                 });
 
-                message = "%s matches found [%s]".formatted(colorFunction.apply(String.valueOf(list.size())), String.join("<gray>, </gray>", results));
+                message = "%s matches found [%s].".formatted(colorFunction.apply(String.valueOf(list.size())), String.join("<gray>, </gray>", results));
             }
 
             if (messageConsumer != null) {
