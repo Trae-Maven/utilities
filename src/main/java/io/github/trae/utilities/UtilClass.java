@@ -53,7 +53,71 @@ public class UtilClass {
         return declaredConstructor.newInstance();
     }
 
+    /**
+     * Creates a new instance of the specified class using the default
+     * no-argument constructor.
+     *
+     * @param type the class type to instantiate
+     * @param <T>  the type of the class being instantiated
+     * @return a new instance of the specified class
+     * @throws Exception if the constructor cannot be found, is inaccessible,
+     *                   or throws an exception
+     * @see #create(Class, Object...)
+     */
     public static <T> T create(final Class<T> type) throws Exception {
         return create(type, new Object[0]);
+    }
+
+    /**
+     * Formats a class name by stripping the given base package prefix
+     * and returning the remaining qualified path.
+     *
+     * @param basePackage the base package prefix to strip (e.g. {@code me.example.project})
+     * @param type        the class to format
+     * @return the trimmed qualified name
+     * @throws IllegalArgumentException if {@code basePackage} or {@code type} is null
+     */
+    public static String formatName(final String basePackage, final Class<?> type) {
+        if (basePackage == null) {
+            throw new IllegalArgumentException("Base package cannot be null.");
+        }
+
+        if (type == null) {
+            throw new IllegalArgumentException("Type cannot be null.");
+        }
+
+        final String name = type.getName();
+
+        if (name.startsWith(basePackage + ".")) {
+            return name.substring(basePackage.length() + 1);
+        }
+
+        return name;
+    }
+
+    /**
+     * Formats a class name by stripping a 3-segment base package prefix
+     * (e.g. {@code me.example.project}) and returning the remaining
+     * qualified path.
+     *
+     * @param type the class to format
+     * @return the trimmed qualified name
+     * @throws IllegalArgumentException if {@code type} is null
+     */
+    public static String formatName(final Class<?> type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Type cannot be null.");
+        }
+
+        final String name = type.getName();
+        final String[] parts = name.split("\\.");
+
+        if (parts.length <= 3) {
+            return name;
+        }
+
+        final String basePackage = String.join(".", Arrays.copyOfRange(parts, 0, 3));
+
+        return formatName(basePackage, type);
     }
 }
