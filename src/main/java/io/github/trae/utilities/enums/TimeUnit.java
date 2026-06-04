@@ -2,10 +2,10 @@ package io.github.trae.utilities.enums;
 
 import io.github.trae.utilities.UtilString;
 import io.github.trae.utilities.enums.interfaces.ITimeUnit;
+import io.github.trae.utilities.objects.function.Function;
 import lombok.Getter;
 
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Represents a unit of time with its equivalent duration in milliseconds.
@@ -91,6 +91,79 @@ public enum TimeUnit implements ITimeUnit {
             case 0 -> "%s %s".formatted(rounded, timeUnit.label(rounded));
             default -> ("%." + trim + "f %s").formatted(value, timeUnit.label(value));
         };
+    }
+
+    /**
+     * Formats a millisecond duration as a breakdown across the given
+     * {@link TimeUnit}s, applying a transform to each part and joining with a
+     * custom separator.
+     *
+     * <p>The units are sorted largest-first, then the duration is consumed
+     * greedily: each unit takes as many whole multiples as fit, and the
+     * remainder carries down to the next-smaller unit. Units whose amount is
+     * zero are omitted, so {@code "5 hours, 2 seconds"} is produced rather than
+     * {@code "5 hours, 0 minutes, 2 seconds"}.</p>
+     *
+     * <p>The {@code trim} parameter selects the per-part output format, applied
+     * uniformly to every part before {@code function} is applied:</p>
+     * <ul>
+     *   <li>{@code -1} — compact short names with no spacing
+     *       (e.g. {@code "5h"}, {@code "1m"}, {@code "2s"}).</li>
+     *   <li>{@code 0} — full labels with singular/plural agreement
+     *       (e.g. {@code "5 hours"}, {@code "1 minute"}, {@code "2 seconds"}).</li>
+     *   <li>{@code > 0} — full labels with that many decimal places
+     *       (e.g. for {@code trim = 1}: {@code "5.0 hours"}, {@code "1.0 minutes"}).</li>
+     * </ul>
+     *
+     * <p>Each formatted part is passed through {@code function} before being
+     * collected, allowing per-part decoration such as colour tags. The decorated
+     * parts are then joined with {@code join}. For example, with a function of
+     * {@code part -> "<yellow>%s</yellow>".formatted(part)} and a join of
+     * {@code "<gray>, </gray>"}, a result might be
+     * {@code "<yellow>5 hours</yellow><gray>, </gray><yellow>2 seconds</yellow>"}.</p>
+     *
+     * @param duration     a duration in milliseconds
+     * @param timeUnitList the units to break the duration down into
+     * @param trim         the per-part format: {@code -1} for short names,
+     *                     {@code 0} for rounded whole numbers, or a positive
+     *                     value for that many decimal places
+     * @param function     a transform applied to each formatted part before joining
+     * @param join         the separator placed between decorated parts
+     * @return a breakdown across the requested units with each part transformed
+     * by {@code function} and joined by {@code join}
+     * @throws IllegalArgumentException if {@code timeUnitList} is empty
+     */
+    public static String format(final long duration, final List<TimeUnit> timeUnitList, final int trim, final Function<String, String> function, final String join) {
+        if (timeUnitList.isEmpty()) {
+            throw new IllegalArgumentException("Time Unit List cannot be empty.");
+        }
+
+        final List<TimeUnit> sortedTimeUnitList = new ArrayList<>(timeUnitList);
+
+        sortedTimeUnitList.sort(Comparator.comparingLong(TimeUnit::getDuration).reversed());
+
+        final List<String> partList = new ArrayList<>();
+
+        long remaining = duration;
+
+        for (final TimeUnit timeUnit : sortedTimeUnitList) {
+            final long amount = remaining / timeUnit.getDuration();
+
+            if (amount <= 0L) {
+                continue;
+            }
+
+            final String part = switch (trim) {
+                case -1 -> amount + timeUnit.getShortName();
+                case 0 -> "%s %s".formatted(amount, timeUnit.label(amount));
+                default -> ("%." + trim + "f %s").formatted((double) amount, timeUnit.label(amount));
+            };
+
+            partList.add(function.apply(part));
+            remaining -= amount * timeUnit.getDuration();
+        }
+
+        return String.join(join, partList);
     }
 
     /**
