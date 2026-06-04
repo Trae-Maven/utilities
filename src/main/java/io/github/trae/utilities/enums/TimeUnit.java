@@ -24,12 +24,12 @@ public enum TimeUnit implements ITimeUnit {
     MONTHS("mo", 2_629_800_000L),
     YEARS("y", 31_557_600_000L);
 
-    private final String name, suffix;
+    private final String name, shortName;
     private final long duration;
 
-    TimeUnit(final String suffix, final long duration) {
+    TimeUnit(final String shortName, final long duration) {
         this.name = UtilString.clean(this.name());
-        this.suffix = suffix;
+        this.shortName = shortName;
         this.duration = duration;
     }
 
@@ -52,11 +52,33 @@ public enum TimeUnit implements ITimeUnit {
     }
 
     /**
-     * Formats a millisecond duration into a human-readable string.
+     * Formats a millisecond duration into a human-readable string, choosing the
+     * largest {@link TimeUnit} that fits the duration.
+     *
+     * <p>The {@code trim} parameter controls the output format:</p>
+     * <ul>
+     *   <li>{@code -1} — compact form using the unit's short name, rounded to a
+     *       whole number (e.g. {@code "500ms"}, {@code "5s"}, {@code "3h"},
+     *       {@code "2y"}).</li>
+     *   <li>{@code 0} — whole-number form using the unit's full label, rounded
+     *       (e.g. {@code "5 seconds"}, {@code "1 minute"}, {@code "3 hours"},
+     *       {@code "2 years"}).</li>
+     *   <li>{@code > 0} — decimal form with the given number of decimal places,
+     *       using the unit's full label (e.g. for {@code trim = 1}:
+     *       {@code "5.0 seconds"}, {@code "1.5 hours"}, {@code "2.3 days"}).</li>
+     * </ul>
+     *
+     * <p>The unit is selected automatically via {@link #getByDuration(long)}, so
+     * the same call adapts across the full range — {@code 500} formats in
+     * milliseconds, {@code 90_000} in minutes, {@code 7_200_000} in hours, and
+     * {@code 63_115_200_000L} in years.</p>
      *
      * @param duration a duration in milliseconds
-     * @param trim     decimal places to include; {@code 0} produces whole numbers
-     * @return a formatted string such as {@code "5 minutes"} or {@code "1 hour"}
+     * @param trim     the output format: {@code -1} for short name, {@code 0} for
+     *                 a rounded whole number, or a positive value for that many
+     *                 decimal places
+     * @return a formatted string such as {@code "500ms"}, {@code "5 seconds"},
+     * {@code "1 minute"}, {@code "1.5 hours"}, or {@code "2 years"}
      */
     public static String format(final long duration, final int trim) {
         final TimeUnit timeUnit = getByDuration(duration);
@@ -64,16 +86,18 @@ public enum TimeUnit implements ITimeUnit {
         final double value = (double) duration / timeUnit.getDuration();
         final long rounded = Math.round(value);
 
-        final String label = timeUnit.label(trim == 0 ? rounded : value);
-
-        return trim <= 0 ? "%s %s".formatted(rounded, label) : ("%." + trim + "f %s").formatted(value, label);
+        return switch (trim) {
+            case -1 -> rounded + timeUnit.getShortName();
+            case 0 -> "%s %s".formatted(rounded, timeUnit.label(rounded));
+            default -> ("%." + trim + "f %s").formatted(value, timeUnit.label(value));
+        };
     }
 
     /**
      * Parses a duration string into its equivalent milliseconds using
      * the suffix defined on each {@link TimeUnit}.
      *
-     * <p>The input is matched against each unit's {@link #suffix} in
+     * <p>The input is matched against each unit's {@link #shortName} in
      * declaration order. The numeric portion preceding the suffix is
      * multiplied by the unit's {@link #duration}.</p>
      *
@@ -92,12 +116,12 @@ public enum TimeUnit implements ITimeUnit {
         final String trimmed = input.trim().toLowerCase(Locale.ROOT);
 
         for (final TimeUnit timeUnit : values()) {
-            if (!(trimmed.endsWith(timeUnit.getSuffix().toLowerCase(Locale.ROOT)))) {
+            if (!(trimmed.endsWith(timeUnit.getShortName().toLowerCase(Locale.ROOT)))) {
                 continue;
             }
 
             try {
-                final long value = Long.parseLong(trimmed.substring(0, trimmed.length() - timeUnit.getSuffix().length()));
+                final long value = Long.parseLong(trimmed.substring(0, trimmed.length() - timeUnit.getShortName().length()));
 
                 return Optional.of(value * timeUnit.getDuration());
             } catch (final Exception ignored) {
@@ -111,8 +135,14 @@ public enum TimeUnit implements ITimeUnit {
     /**
      * Returns the singular or plural label for this unit based on {@code value}.
      *
+     * <p>The label is the lowercased unit name; a value of exactly {@code 1.0}
+     * drops the trailing {@code "s"} to give the singular form. For example:
+     * {@code 1.0} yields {@code "second"}, {@code "minute"}, {@code "hour"},
+     * {@code "day"}, {@code "year"}; any other value yields {@code "seconds"},
+     * {@code "minutes"}, {@code "hours"}, {@code "days"}, {@code "years"}.</p>
+     *
      * @param value the numeric value to test for singularity
-     * @return {@code "minute"} for {@code 1.0}, {@code "minutes"} otherwise
+     * @return the singular label for {@code 1.0}, the plural label otherwise
      */
     @Override
     public String label(final double value) {
