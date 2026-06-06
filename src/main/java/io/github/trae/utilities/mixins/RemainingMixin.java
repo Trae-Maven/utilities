@@ -1,14 +1,14 @@
-package io.github.trae.utilities.impl;
+package io.github.trae.utilities.mixins;
 
 import io.github.trae.utilities.UtilTime;
 
 /**
  * Implemented by objects that can report how much time remains on their duration.
  *
- * <p>Composes {@link SystemTimeImpl} and {@link DurationImpl} to delegate remaining
+ * <p>Composes {@link SystemTimeMixin} and {@link DurationMixin} to delegate remaining
  * time calculation to {@link UtilTime#getRemaining(long, long)}.
  */
-public interface RemainingImpl extends SystemTimeImpl, DurationImpl {
+public interface RemainingMixin extends SystemTimeMixin, DurationMixin {
 
     /**
      * Returns the number of milliseconds remaining until the duration elapses.

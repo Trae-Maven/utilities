@@ -1,4 +1,4 @@
-package io.github.trae.utilities.impl;
+package io.github.trae.utilities.mixins;
 
 import io.github.trae.utilities.UtilTime;
 
@@ -8,7 +8,7 @@ import io.github.trae.utilities.UtilTime;
  * <p>Provides a default {@link #getDurationString()} method that formats the duration
  * into a human-readable string using the best-fit {@link io.github.trae.utilities.enums.TimeUnit}.
  */
-public interface DurationImpl {
+public interface DurationMixin {
 
     long getDuration();
 

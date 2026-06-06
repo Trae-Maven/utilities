@@ -1,14 +1,14 @@
-package io.github.trae.utilities.impl;
+package io.github.trae.utilities.mixins;
 
 import io.github.trae.utilities.UtilTime;
 
 /**
  * Implemented by objects that can determine whether their duration has elapsed.
  *
- * <p>Composes {@link SystemTimeImpl} and {@link DurationImpl} to delegate expiry
+ * <p>Composes {@link SystemTimeMixin} and {@link DurationMixin} to delegate expiry
  * checking to {@link UtilTime#elapsed(long, long)}.
  */
-public interface ExpiredImpl extends SystemTimeImpl, DurationImpl {
+public interface ExpiredMixin extends SystemTimeMixin, DurationMixin {
 
     /**
      * Returns whether the duration has fully elapsed since {@link #getSystemTime()}.
