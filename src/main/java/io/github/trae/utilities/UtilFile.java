@@ -1,6 +1,7 @@
 package io.github.trae.utilities;
 
 import io.github.trae.utilities.cache.CachedFile;
+import lombok.Setter;
 import lombok.experimental.UtilityClass;
 
 import java.io.File;
@@ -23,12 +24,31 @@ import java.util.concurrent.ConcurrentHashMap;
  * Results are cached by normalized path and automatically invalidated
  * when the file's last-modified timestamp changes.</p>
  *
- * <p>Files under 2GB are mapped in a single pass. Larger files are
- * mapped in chunks of {@link Integer#MAX_VALUE} bytes to stay within
- * the {@link MappedByteBuffer} size limit.</p>
+ * <p>Files at or under {@link #MAX_MAP_SIZE} bytes are mapped in a single
+ * pass. Larger files are mapped in chunks of {@link #MAX_MAP_SIZE} bytes to
+ * stay within the {@link MappedByteBuffer} size limit.</p>
+ *
+ * <p>Files larger than {@link #maxCacheableMb} megabytes are read fresh from
+ * disk on every call and never retained in the cache. Adjust via
+ * {@link #setMaxCacheableMb(long)}.</p>
  */
 @UtilityClass
 public class UtilFile {
+
+    /**
+     * Maximum number of bytes that can be mapped into a single
+     * {@link MappedByteBuffer}. This is a hard JVM limit (buffer offsets
+     * and sizes are {@code int}-bounded), not a tunable value. Files larger
+     * than this are mapped in sequential chunks of this size.
+     */
+    private static final int MAX_MAP_SIZE = Integer.MAX_VALUE;
+
+    /**
+     * Files larger than this many megabytes bypass the cache entirely and are
+     * re-read from disk on every call. Defaults to 512 MB (0.5 GB).
+     */
+    @Setter
+    private static long maxCacheableMb = 512;
 
     /**
      * Path-keyed cache storing file contents alongside their last-modified timestamp.
@@ -38,6 +58,8 @@ public class UtilFile {
     /**
      * Reads all lines from the given path. Returns cached results on
      * subsequent calls unless the file has been modified on disk.
+     *
+     * <p>Files larger than {@link #maxCacheableMb} megabytes bypass the cache.</p>
      *
      * @param path the path to the file
      * @return an unmodifiable list of lines
@@ -49,6 +71,11 @@ public class UtilFile {
         }
 
         final Path normalizedPath = path.toAbsolutePath().normalize();
+
+        if (normalizedPath.toFile().length() > maxCacheableMb * 1024 * 1024) {
+            CACHED_FILE_MAP.remove(normalizedPath);
+            return readFromDisk(normalizedPath);
+        }
 
         final CachedFile cachedFile = CACHED_FILE_MAP.compute(normalizedPath, (__, existing) -> {
             final long lastModified = normalizedPath.toFile().lastModified();
@@ -86,9 +113,9 @@ public class UtilFile {
      * directly into userspace memory via {@link FileChannel#map} for
      * the fastest possible sequential read.
      *
-     * <p>Small files (under 2GB) are mapped in a single operation.
-     * Larger files are mapped in sequential chunks to respect the
-     * {@link MappedByteBuffer} size constraint.</p>
+     * <p>Files at or under {@link #MAX_MAP_SIZE} are mapped in a single
+     * operation. Larger files are mapped in sequential chunks to respect
+     * the {@link MappedByteBuffer} size constraint.</p>
      *
      * @param path the normalized, absolute path to the file
      * @return an unmodifiable list of lines decoded as UTF-8
@@ -106,18 +133,18 @@ public class UtilFile {
                 return Collections.emptyList();
             }
 
-            if (size <= Integer.MAX_VALUE) {
+            if (size <= MAX_MAP_SIZE) {
                 final MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, size);
 
                 return StandardCharsets.UTF_8.decode(buffer).toString().lines().toList();
             }
 
-            final StringBuilder stringBuilder = new StringBuilder(Integer.MAX_VALUE);
+            final StringBuilder stringBuilder = new StringBuilder(MAX_MAP_SIZE);
 
             long position = 0;
             while (position < size) {
                 final long remaining = size - position;
-                final long mapSize = Math.min(Integer.MAX_VALUE, remaining);
+                final long mapSize = Math.min(MAX_MAP_SIZE, remaining);
 
                 final MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, position, mapSize);
                 stringBuilder.append(StandardCharsets.UTF_8.decode(buffer));
