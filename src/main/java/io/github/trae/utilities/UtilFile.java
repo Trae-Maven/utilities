@@ -29,8 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * stay within the {@link MappedByteBuffer} size limit.</p>
  *
  * <p>Files larger than {@link #maxCacheableMb} megabytes are read fresh from
- * disk on every call and never retained in the cache. Adjust via
- * {@link #setMaxCacheableMb(long)}.</p>
+ * disk on every call and never retained in the cache. Adjust via the
+ * Lombok-generated {@code setMaxCacheableMb(long)} setter.</p>
  */
 @UtilityClass
 public class UtilFile {

@@ -11,8 +11,9 @@ import lombok.experimental.UtilityClass;
  * Static utility wrapper around {@link FluentLogger} providing a single
  * configurable logger instance shared across the application.
  *
- * <p>Defaults to {@link FluentLogger#forEnclosingClass()}. Call
- * {@link #setLogger(AbstractLogger)} to replace with a custom logger * during initialization.</p>
+ * <p>Defaults to {@link FluentLogger#forEnclosingClass()}. Call the
+ * Lombok-generated {@code setLogger(AbstractLogger)} setter to replace
+ * it with a custom logger during initialization.</p>
  */
 @UtilityClass
 public class UtilLogger {
