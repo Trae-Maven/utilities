@@ -42,7 +42,7 @@ public class UtilCollection {
      * @param <Type>            the element type
      * @return an {@link Optional} containing the matched element, or empty if zero or multiple matches were found
      */
-    public static <Type> Optional<Type> search(final Collection<? extends Type> collection, final Predicate<Type> typePredicate, final Predicate<Type> equalsPredicate, final Predicate<Type> containsPredicate, final Consumer<List<Type>> listConsumer, final Consumer<String> messageConsumer, final Function<String, String> colorFunction, final Function<Type, String> resultFunction, final String input, final boolean inform) {
+    public static <Type> Optional<Type> search(final Class<Type> clazz, final Collection<? extends Type> collection, final Predicate<Type> typePredicate, final Predicate<Type> equalsPredicate, final Predicate<Type> containsPredicate, final Consumer<List<Type>> listConsumer, final Consumer<String> messageConsumer, final Function<String, String> colorFunction, final Function<Type, String> resultFunction, final String input, final boolean inform) {
         final List<Type> list = new ArrayList<>();
 
         for (final Type object : collection) {
@@ -51,11 +51,11 @@ public class UtilCollection {
             }
 
             if (equalsPredicate != null && equalsPredicate.test(object)) {
-                return Optional.of(object);
+                return Optional.of(UtilJava.cast(clazz, object));
             }
 
             if (containsPredicate != null && containsPredicate.test(object)) {
-                list.add(object);
+                list.add(UtilJava.cast(clazz, object));
             }
         }
 
@@ -64,7 +64,7 @@ public class UtilCollection {
         }
 
         if (list.size() == 1) {
-            return Optional.of(list.getFirst());
+            return Optional.of(UtilJava.cast(clazz, list.getFirst()));
         }
 
         if (inform) {
