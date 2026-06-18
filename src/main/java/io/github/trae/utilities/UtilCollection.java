@@ -29,6 +29,7 @@ public class UtilCollection {
      *   <li>No matches — an optional "no matches" message is sent to {@code messageConsumer} when {@code inform} is {@code true}.</li>
      * </ol>
      *
+     * @param clazz             the element type's class, used to cast matched elements
      * @param collection        the collection to search
      * @param typePredicate     pre-filter applied before exact and partial matching, or {@code null} to skip
      * @param equalsPredicate   exact-match predicate, or {@code null} to skip
