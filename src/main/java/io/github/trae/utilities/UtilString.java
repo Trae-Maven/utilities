@@ -225,4 +225,28 @@ public class UtilString {
     public static String withIndefiniteArticle(final String input) {
         return IndefiniteArticle.format(input);
     }
+
+    /**
+     * Returns the correct indefinite article prefix ("a " or "an ") for a
+     * string.
+     *
+     * <p>Determines the appropriate article using common English pronunciation
+     * rules backed by a cached prefix lookup for fast repeated resolution.
+     * Only the first word of the input is inspected.</p>
+     *
+     * <p>Examples:</p>
+     * <ul>
+     *   <li>{@code "Apple"} → {@code "an "}</li>
+     *   <li>{@code "Hour"} → {@code "an "}</li>
+     *   <li>{@code "University"} → {@code "a "}</li>
+     *   <li>{@code "European"} → {@code "a "}</li>
+     * </ul>
+     *
+     * @param input the string to determine an indefinite article for
+     * @return the appropriate indefinite article including its trailing space,
+     * or an empty string if the input is blank or {@code null}
+     */
+    public static String getIndefiniteArticlePrefix(final String input) {
+        return IndefiniteArticle.get(input);
+    }
 }

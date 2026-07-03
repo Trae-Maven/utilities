@@ -11,19 +11,18 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Represents an English indefinite article ("a" or "an") together with
- * the pronunciation prefixes that determine when it should be used.
+ * Represents an English indefinite article and the pronunciation prefixes
+ * used to resolve whether a string should be preceded by {@code "a "} or
+ * {@code "an "}.
  *
- * <p>The lookup is based on common English pronunciation rules rather
- * than simple vowel/consonant matching. Known pronunciation exceptions
- * (such as {@code "user"}, {@code "hour"}, and {@code "European"}) are
- * resolved using a longest-prefix lookup and cached for subsequent
- * requests.</p>
+ * <p>The lookup is based on common English pronunciation rules rather than
+ * simple vowel/consonant matching. Known pronunciation exceptions, such as
+ * {@code "user"}, {@code "hour"}, and {@code "European"}, are handled using
+ * a longest-prefix lookup.</p>
  *
- * <p>Prefix lookups are computed once during class initialization and
- * stored in an immutable lookup table. The first word of each formatted
- * string is cached after its initial lookup, making repeated formatting
- * effectively constant time.</p>
+ * <p>Prefix mappings are built once during class initialization. Resolved
+ * first words are cached after their first lookup, making repeated calls for
+ * the same leading word effectively constant-time.</p>
  */
 @AllArgsConstructor
 @Getter
@@ -132,30 +131,24 @@ public enum IndefiniteArticle {
     );
 
     /**
-     * Cache of previously resolved first words to their corresponding
-     * indefinite article.
+     * Cache of resolved first words to their matching indefinite article.
      */
     private static final ConcurrentHashMap<String, IndefiniteArticle> CACHE_MAP = new ConcurrentHashMap<>(64);
 
     /**
-     * Immutable lookup table mapping lowercase pronunciation prefixes
-     * to their corresponding indefinite article.
+     * Immutable lookup table of lowercase pronunciation prefixes to their
+     * matching indefinite article.
      */
     private static final Map<String, IndefiniteArticle> BY_PREFIX_MAP;
 
     /**
-     * Length of the longest registered pronunciation prefix.
+     * Length of the longest configured pronunciation prefix.
      */
     private static final int MAX_PREFIX_LENGTH;
 
     /*
-     * Builds the immutable pronunciation prefix lookup table and determines
-     * the length of the longest registered prefix.
-     *
-     * Each configured prefix is normalised to lowercase and mapped to its
-     * corresponding indefinite article. The longest prefix length is cached
-     * so runtime lookups only inspect the minimum number of characters
-     * required.
+     * Builds the immutable prefix lookup table and records the longest
+     * configured prefix length for bounded runtime lookups.
      */
     static {
         final Map<String, IndefiniteArticle> map = new HashMap<>(128);
@@ -176,33 +169,28 @@ public enum IndefiniteArticle {
     }
 
     /**
-     * The article text, including a trailing space.
+     * The article text, including the trailing space.
      */
     private final String article;
 
     /**
-     * Pronunciation prefixes that indicate this article should be used.
+     * Pronunciation prefixes that resolve to this article.
      */
     private final Set<String> prefixes;
 
     /**
-     * Prepends the correct indefinite article ("a" or "an") to the supplied
-     * string.
+     * Returns the correct indefinite article for the supplied string.
      *
      * <p>Only the first word of the input is inspected when determining the
-     * appropriate article. The remaining characters are preserved exactly as
-     * provided.</p>
+     * appropriate article. The returned article includes its trailing space.</p>
      *
-     * <p>Resolved first words are cached, making subsequent calls for the
-     * same leading word effectively constant-time.</p>
-     *
-     * @param input the string to prepend an indefinite article to
-     * @return the formatted string, or {@code null} if the input is blank or
-     * {@code null}
+     * @param input the string to determine an indefinite article for
+     * @return {@code "a "} or {@code "an "}, or an empty string if the input
+     * is blank or {@code null}
      */
-    public static String format(final String input) {
+    public static String get(final String input) {
         if (UtilString.isEmpty(input)) {
-            return input;
+            return "";
         }
 
         final int separator = input.indexOf(' ');
@@ -211,14 +199,30 @@ public enum IndefiniteArticle {
 
         return CACHE_MAP.computeIfAbsent(firstWord, key -> {
             for (int length = Math.min(MAX_PREFIX_LENGTH, key.length()); length > 0; length--) {
-                final IndefiniteArticle article = BY_PREFIX_MAP.get(key.substring(0, length));
+                final IndefiniteArticle indefiniteArticle = BY_PREFIX_MAP.get(key.substring(0, length));
 
-                if (article != null) {
-                    return article;
+                if (indefiniteArticle != null) {
+                    return indefiniteArticle;
                 }
             }
 
             return A;
-        }).getArticle() + input;
+        }).getArticle();
+    }
+
+    /**
+     * Prepends the correct indefinite article ("a" or "an") to the supplied
+     * string.
+     *
+     * <p>Only the first word of the input is inspected when determining the
+     * appropriate article. The input itself is otherwise preserved exactly as
+     * provided.</p>
+     *
+     * @param input the string to prepend an indefinite article to
+     * @return the formatted string, or {@code null} if the input is blank or
+     * {@code null}
+     */
+    public static String format(final String input) {
+        return UtilString.isEmpty(input) ? input : get(input) + input;
     }
 }
