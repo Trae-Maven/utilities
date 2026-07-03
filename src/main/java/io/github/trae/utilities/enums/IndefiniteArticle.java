@@ -31,7 +31,7 @@ public enum IndefiniteArticle {
     A(
             "a ",
             Set.of(
-                    // "yoo" sound
+                    // "you"/"yoo" sound
                     "uni",
                     "unif",
                     "unio",
@@ -42,91 +42,95 @@ public enum IndefiniteArticle {
                     "usual",
                     "usu",
                     "util",
-                    "uti",
                     "ufo",
                     "uk",
+                    "ubi",
+                    "uran",
+                    "urea",
+
+                    // "yur"
                     "eu",
                     "eur",
                     "euro",
                     "eul",
                     "eup",
+
+                    // "won"
                     "one",
                     "once",
-                    "ouija",
-                    "ubi",
-                    "uran",
-                    "urea"
+
+                    // oddballs
+                    "ouija"
             )
     ),
 
     AN(
             "an ",
             Set.of(
-                    // Default vowel prefixes
+                    // vowel sounds
                     "a",
                     "e",
                     "i",
                     "o",
                     "u",
 
-                    // Silent h
+                    // silent h
                     "hour",
-                    "hours",
-                    "hon",
                     "honest",
                     "honesty",
-                    "honor",
                     "honour",
+                    "honor",
                     "heir",
-                    "hei",
+                    "heiress",
                     "herb",
 
-                    // Numbers
+                    // numbers
                     "8",
                     "11",
                     "18",
                     "80",
                     "800",
 
-                    // Letter pronunciations
-                    "A",
-                    "E",
-                    "F",
-                    "H",
-                    "I",
-                    "L",
-                    "M",
-                    "N",
-                    "O",
-                    "R",
-                    "S",
-                    "X",
+                    // common abbreviations/acronyms
+                    "api",
+                    "aws",
 
-                    // Common acronym prefixes
-                    "FB",
-                    "FC",
-                    "FD",
-                    "FE",
-                    "FH",
-                    "FL",
+                    "fbi",
+                    "fcc",
+                    "fda",
+                    "fps",
 
-                    "MR",
-                    "ML",
-                    "MS",
+                    "html",
+                    "http",
+                    "https",
 
-                    "NP",
-                    "NS",
-                    "NX",
+                    "ios",
 
-                    "RPG",
-                    "SQL",
-                    "SOS",
-                    "SMS",
-                    "SSD",
+                    "lcd",
+                    "led",
+                    "lgbt",
 
-                    "XP",
-                    "XML",
-                    "XSS"
+                    "mba",
+                    "md",
+
+                    "nba",
+                    "nfl",
+                    "npc",
+                    "npcs",
+                    "nsw",
+
+                    "rpg",
+
+                    "sms",
+                    "sql",
+                    "ssd",
+                    "ssh",
+                    "ssl",
+
+                    "xml",
+                    "xp",
+                    "xray",
+                    "xss"
             )
     );
 
