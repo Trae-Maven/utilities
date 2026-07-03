@@ -1,5 +1,6 @@
 package io.github.trae.utilities;
 
+import io.github.trae.utilities.enums.IndefiniteArticle;
 import lombok.experimental.UtilityClass;
 
 import java.util.Arrays;
@@ -47,15 +48,15 @@ public class UtilString {
      *   <li>{@code "already clean"} → {@code "Already Clean"}</li>
      * </ul>
      *
-     * @param string the input string to clean
+     * @param input the input string to clean
      * @return the title-cased string, or {@code null} if the input is blank/null
      */
-    public static String clean(final String string) {
-        if (isEmpty(string)) {
+    public static String clean(final String input) {
+        if (isEmpty(input)) {
             return null;
         }
 
-        final String key = string.toLowerCase(Locale.ROOT);
+        final String key = input.toLowerCase(Locale.ROOT);
 
         return CLEAN_CACHE.computeIfAbsent(key, k -> {
             final String replaced = k.replace("_", " ");
@@ -78,15 +79,15 @@ public class UtilString {
      *   <li>{@code "hello world"} → {@code "helloworld"}</li>
      * </ul>
      *
-     * @param string the input string to slice
+     * @param input the input string to slice
      * @return the stripped string, or {@code null} if the input is blank/null
      */
-    public static String slice(final String string) {
-        if (isEmpty(string)) {
+    public static String slice(final String input) {
+        if (isEmpty(input)) {
             return null;
         }
 
-        return SLICE_CACHE.computeIfAbsent(string, k -> k.replaceAll("[ _.]", ""));
+        return SLICE_CACHE.computeIfAbsent(input, k -> k.replaceAll("[ _.]", ""));
     }
 
     /**
@@ -103,15 +104,15 @@ public class UtilString {
      *   <li>{@code "some_key"} → {@code "some key"}</li>
      * </ul>
      *
-     * @param string the input string to un-slice
+     * @param input the input string to un-slice
      * @return the expanded string, or {@code null} if the input is blank/null
      */
-    public static String unSlice(final String string) {
-        if (isEmpty(string)) {
+    public static String unSlice(final String input) {
+        if (isEmpty(input)) {
             return null;
         }
 
-        return UN_SLICE_CACHE.computeIfAbsent(string, k -> {
+        return UN_SLICE_CACHE.computeIfAbsent(input, k -> {
             final String replaced = k.replace("_", " ");
             final StringBuilder builder = new StringBuilder();
             final char[] characters = replaced.toCharArray();
@@ -141,11 +142,11 @@ public class UtilString {
     /**
      * Checks whether a string is null, empty, or contains only whitespace.
      *
-     * @param string the string to check
+     * @param input the string to check
      * @return {@code true} if the string is null, empty, or blank
      */
-    public static boolean isEmpty(final String string) {
-        return string == null || string.isBlank();
+    public static boolean isEmpty(final String input) {
+        return input == null || input.isBlank();
     }
 
     /**
@@ -179,11 +180,11 @@ public class UtilString {
      *   <li>{@code 1000} → {@code "$1,000"}</li>
      * </ul>
      *
-     * @param value the integer value to format
+     * @param input the integer value to format
      * @return the formatted dollar string
      */
-    public static String formatToDollarByInteger(final int value) {
-        return "$%s".formatted(String.format("%,d", value));
+    public static String formatToDollarByInteger(final int input) {
+        return "$%s".formatted(String.format("%,d", input));
     }
 
     /**
@@ -195,10 +196,33 @@ public class UtilString {
      *   <li>{@code 1000.5} → {@code "$1,000.50"}</li>
      * </ul>
      *
-     * @param value the double value to format
+     * @param input the double value to format
      * @return the formatted dollar string with cents
      */
-    public static String formatToDollarByDouble(final double value) {
-        return "$%s".formatted(String.format("%,.2f", value));
+    public static String formatToDollarByDouble(final double input) {
+        return "$%s".formatted(String.format("%,.2f", input));
+    }
+
+    /**
+     * Prepends the correct indefinite article ("a" or "an") to a string.
+     *
+     * <p>Determines the appropriate article using common English pronunciation
+     * rules backed by a cached prefix lookup for fast repeated formatting.
+     * Only the first word of the input is inspected; the remainder of the
+     * string is preserved exactly as provided.</p>
+     *
+     * <p>Examples:</p>
+     * <ul>
+     *   <li>{@code "Apple"} → {@code "an Apple"}</li>
+     *   <li>{@code "Hour"} → {@code "an Hour"}</li>
+     *   <li>{@code "University"} → {@code "a University"}</li>
+     *   <li>{@code "European"} → {@code "a European"}</li>
+     * </ul>
+     *
+     * @param input the string to prepend an indefinite article to
+     * @return the formatted string, or {@code null} if the input is blank or {@code null}
+     */
+    public static String withIndefiniteArticle(final String input) {
+        return IndefiniteArticle.format(input);
     }
 }
