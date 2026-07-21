@@ -28,6 +28,7 @@
     </distributionManagement>
 
     <dependencies>
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -35,6 +36,7 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Flogger -->
         <dependency>
             <groupId>com.google.flogger</groupId>
             <artifactId>flogger</artifactId>
@@ -45,6 +47,14 @@
             <groupId>com.google.flogger</groupId>
             <artifactId>flogger-system-backend</artifactId>
             <version>0.9</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Agron2 -->
+        <dependency>
+            <groupId>de.mkammerer</groupId>
+            <artifactId>argon2-jvm</artifactId>
+            <version>2.12</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

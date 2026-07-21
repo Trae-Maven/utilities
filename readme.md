@@ -14,6 +14,7 @@ Built for modern Java (Java 21+).
 - Base64 encoding and decoding with byte[] and String convenience methods
 - Cryptographic hashing (SHA-256, SHA-512, etc.) with hex output
 - HMAC computation with Base64 output
+- Argon2id password hashing, verification, and configurable verification caching
 - Constant-time hash verification to prevent timing side-channel attacks
 - Cached MessageDigest and Mac prototypes to avoid repeated provider lookups
 - Hex encoding and decoding
@@ -55,6 +56,7 @@ The following is only needed at compile time for annotation processing and is ex
 Utilities includes several dependencies that are automatically included when you install the library.
 
 - [Google Flogger](https://github.com/google/flogger) – Fluent logging API used internally by `UtilLogger`.
+- [Argon2 JVM](https://github.com/phxql/argon2-jvm) – Argon2 password hashing implementation used internally by `UtilArgon`.
 
 ```xml
 <dependency>
@@ -66,9 +68,14 @@ Utilities includes several dependencies that are automatically included when you
     <groupId>com.google.flogger</groupId>
     <artifactId>flogger-system-backend</artifactId>
 </dependency>
+
+<dependency>
+    <groupId>de.mkammerer</groupId>
+    <artifactId>argon2-jvm</artifactId>
+</dependency>
 ```
 
-These dependencies are automatically included when installing Utilities and do not need to be added manually.
+These dependencies are transitively included by Utilities and do not need to be declared explicitly.
 
 ---
 
@@ -93,6 +100,7 @@ Add the dependency to your Maven project:
 | `UtilFile` | Memory-mapped file reading with automatic cache invalidation |
 | `UtilBase64` | Base64 encoding and decoding for byte[] and String |
 | `UtilHash` | Cryptographic hashing, HMAC, hex encoding, and constant-time verification |
+| `UtilArgon` | Argon2id password hashing, verification, and configurable verification caching |
 | `UtilGeneric` | Reflective generic type parameter resolution with caching |
 | `UtilClass` | Reflective class instantiation via constructor resolution |
 | `UtilField` | Reflective field reading and writing with type validation |
