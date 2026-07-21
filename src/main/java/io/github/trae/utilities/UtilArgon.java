@@ -87,21 +87,21 @@ public class UtilArgon {
      */
     @Getter
     @Setter
-    private static int ITERATIONS = 3;
+    private static int iterations = 3;
 
     /**
      * The number of parallel threads used by Argon2.
      */
     @Getter
     @Setter
-    private static int PARALLELISM = 2;
+    private static int parallelism = 2;
 
     /**
      * The amount of memory, in kilobytes, allocated for Argon2.
      */
     @Getter
     @Setter
-    private static int MEMORY_KB = 1024 * 64;
+    private static int memoryKb = 1024 * 64;
 
     /**
      * Limits the number of concurrent Argon2 operations.
@@ -132,7 +132,7 @@ public class UtilArgon {
         try {
             ARGON_SEMAPHORE.acquire();
             try {
-                return createArgon().hash(ITERATIONS, MEMORY_KB, PARALLELISM, combinedInput);
+                return createArgon().hash(iterations, memoryKb, parallelism, combinedInput);
             } finally {
                 ARGON_SEMAPHORE.release();
             }
@@ -202,7 +202,7 @@ public class UtilArgon {
      * @return a new Argon2 hash if a rehash is required; otherwise {@code null}.
      */
     public static String tryReHash(final String plainPassword, final String pepper, final String salt, final String storedHash) {
-        if (!(createArgon().needsRehash(storedHash, ITERATIONS, MEMORY_KB, PARALLELISM))) {
+        if (!(createArgon().needsRehash(storedHash, iterations, memoryKb, parallelism))) {
             return null;
         }
 
