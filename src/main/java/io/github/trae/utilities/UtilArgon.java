@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Utility methods for hashing and verifying passwords using the Argon2id algorithm.
  *
- * <p>This class combines the supplied pepper, plain-text password, and secret into a
+ * <p>This class combines the supplied pepper, plain-text password, and salt into a
  * single byte array before performing Argon2 operations. Successful password
  * verifications may be cached through a pluggable cache implementation to reduce
  * the cost of repeatedly verifying the same credentials.</p>
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  * caching solution.</p>
  *
  * <p><b>Cache keys are HMAC-SHA256 digests</b> computed under a random key that is
- * generated at class-initialisation and never leaves the process. A plain SHA-256
+ * generated at class-initialization and never leaves the process. A plain SHA-256
  * digest of the credential would be a fast, unsalted fingerprint of the password
  * itself: anyone who obtained the cache contents (and, for an external cache, that
  * includes anyone who dumps Redis) could brute-force it on a GPU at billions of
@@ -236,12 +236,12 @@ public class UtilArgon {
      *
      * @param plainPassword the plain-text password.
      * @param pepper        the application-wide pepper.
-     * @param secret        the per-user secret mixed into the input.
+     * @param salt          the per-user salt mixed into the input.
      * @return the encoded Argon2 hash.
      * @throws IllegalStateException if the hashing thread is interrupted.
      */
-    public static String hash(final String plainPassword, final String pepper, final String secret) {
-        final byte[] combinedInput = buildInput(plainPassword, pepper, secret);
+    public static String hash(final String plainPassword, final String pepper, final String salt) {
+        final byte[] combinedInput = buildInput(plainPassword, pepper, salt);
 
         try {
             final Semaphore semaphore = argonSemaphore;
@@ -263,20 +263,20 @@ public class UtilArgon {
     /**
      * Verifies a password against an existing Argon2 hash.
      *
-     * <p>A keyed digest of the combined pepper, password, and secret is used as the
+     * <p>A keyed digest of the combined pepper, password, and salt is used as the
      * cache key. If a cached successful verification exists for the stored hash and
      * the digests match, Argon2 verification is skipped.</p>
      *
      * @param plainPassword the plain-text password.
      * @param pepper        the application-wide pepper.
-     * @param secret        the per-user secret mixed into the input.
+     * @param salt          the per-user salt mixed into the input.
      * @param storedHash    the stored Argon2 hash.
      * @return {@code true} if the password is valid; otherwise {@code false}.
      * @throws IllegalStateException if HMAC-SHA256 is unavailable or the
      *                               verification thread is interrupted.
      */
-    public static boolean verify(final String plainPassword, final String pepper, final String secret, final String storedHash) {
-        final byte[] combinedInput = buildInput(plainPassword, pepper, secret);
+    public static boolean verify(final String plainPassword, final String pepper, final String salt, final String storedHash) {
+        final byte[] combinedInput = buildInput(plainPassword, pepper, salt);
 
         try {
             final String digestKey = digest(combinedInput);
@@ -310,16 +310,16 @@ public class UtilArgon {
      *
      * @param plainPassword the plain-text password.
      * @param pepper        the application-wide pepper.
-     * @param secret        the per-user secret mixed into the input.
+     * @param salt          the per-user salt mixed into the input.
      * @param storedHash    the existing Argon2 hash.
      * @return a new Argon2 hash if a rehash is required; otherwise {@code null}.
      */
-    public static String tryReHash(final String plainPassword, final String pepper, final String secret, final String storedHash) {
+    public static String tryReHash(final String plainPassword, final String pepper, final String salt, final String storedHash) {
         if (!(ARGON.needsRehash(storedHash, iterations, memoryKb, parallelism))) {
             return null;
         }
 
-        return hash(plainPassword, pepper, secret);
+        return hash(plainPassword, pepper, salt);
     }
 
     /**
@@ -337,7 +337,7 @@ public class UtilArgon {
     }
 
     /**
-     * Combines the pepper, password, and secret into a single byte array suitable
+     * Combines the pepper, password, and salt into a single byte array suitable
      * for Argon2 hashing and verification.
      *
      * <p>Each component is length-prefixed so that different splits of the same
@@ -348,25 +348,25 @@ public class UtilArgon {
      *
      * @param plainPassword the plain-text password.
      * @param pepper        the application-wide pepper.
-     * @param secret        the per-user secret mixed into the input.
+     * @param salt          the per-user salt mixed into the input.
      * @return the combined byte array.
      */
-    private static byte[] buildInput(final String plainPassword, final String pepper, final String secret) {
+    private static byte[] buildInput(final String plainPassword, final String pepper, final String salt) {
         final byte[] passwordBytes = plainPassword.getBytes(StandardCharsets.UTF_8);
-        final byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
+        final byte[] saltBytes = salt.getBytes(StandardCharsets.UTF_8);
         final byte[] pepperBytes = pepper.getBytes(StandardCharsets.UTF_8);
 
-        final byte[] combinedInput = new byte[12 + pepperBytes.length + passwordBytes.length + secretBytes.length];
+        final byte[] combinedInput = new byte[12 + pepperBytes.length + passwordBytes.length + saltBytes.length];
 
         int offset = 0;
 
         offset = writeSegment(combinedInput, offset, pepperBytes);
         offset = writeSegment(combinedInput, offset, passwordBytes);
 
-        writeSegment(combinedInput, offset, secretBytes);
+        writeSegment(combinedInput, offset, saltBytes);
 
         Arrays.fill(passwordBytes, (byte) 0);
-        Arrays.fill(secretBytes, (byte) 0);
+        Arrays.fill(saltBytes, (byte) 0);
         Arrays.fill(pepperBytes, (byte) 0);
 
         return combinedInput;
@@ -396,7 +396,7 @@ public class UtilArgon {
     /**
      * Derives the cache key for a combined credential input.
      *
-     * @param combinedInput the combined pepper, password, and secret.
+     * @param combinedInput the combined pepper, password, and salt.
      * @return a Base64-encoded keyed digest.
      * @throws IllegalStateException if HMAC-SHA256 is unavailable.
      */
