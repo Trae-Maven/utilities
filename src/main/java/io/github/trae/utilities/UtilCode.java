@@ -1,5 +1,7 @@
 package io.github.trae.utilities;
 
+import lombok.experimental.UtilityClass;
+
 import java.security.SecureRandom;
 
 /**
@@ -20,6 +22,7 @@ import java.security.SecureRandom;
  * mixed-case alphabet, roughly 5.95. Size the length against the use: a code that
  * can be guessed online needs either enough length or an attempt limit around it.</p>
  */
+@UtilityClass
 public class UtilCode {
 
     /**
