@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * pass. Larger files are mapped in chunks of {@link #MAX_MAP_SIZE} bytes to
  * stay within the {@link MappedByteBuffer} size limit.</p>
  *
- * <p>Files larger than {@link #maxCacheableMb} megabytes are read fresh from
+ * <p>Files larger than {@link #maxCacheableInMegaBytes} megabytes are read fresh from
  * disk on every call and never retained in the cache. Adjust via the
  * Lombok-generated {@code setMaxCacheableMb(long)} setter.</p>
  */
@@ -48,7 +48,7 @@ public class UtilFile {
      * re-read from disk on every call. Defaults to 512 MB (0.5 GB).
      */
     @Setter
-    private static long maxCacheableMb = 512;
+    private static long maxCacheableInMegaBytes = 512L;
 
     /**
      * Path-keyed cache storing file contents alongside their last-modified timestamp.
@@ -59,7 +59,7 @@ public class UtilFile {
      * Reads all lines from the given path. Returns cached results on
      * subsequent calls unless the file has been modified on disk.
      *
-     * <p>Files larger than {@link #maxCacheableMb} megabytes bypass the cache.</p>
+     * <p>Files larger than {@link #maxCacheableInMegaBytes} megabytes bypass the cache.</p>
      *
      * @param path the path to the file
      * @return an unmodifiable list of lines
@@ -72,7 +72,7 @@ public class UtilFile {
 
         final Path normalizedPath = path.toAbsolutePath().normalize();
 
-        if (normalizedPath.toFile().length() > maxCacheableMb * 1024 * 1024) {
+        if (normalizedPath.toFile().length() > maxCacheableInMegaBytes * 1024 * 1024) {
             CACHED_FILE_MAP.remove(normalizedPath);
             return readFromDisk(normalizedPath);
         }
@@ -126,17 +126,17 @@ public class UtilFile {
             throw new IllegalArgumentException("Path cannot be null.");
         }
 
-        try (final FileChannel channel = FileChannel.open(path, StandardOpenOption.READ)) {
-            final long size = channel.size();
+        try (final FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.READ)) {
+            final long size = fileChannel.size();
 
             if (size == 0) {
                 return Collections.emptyList();
             }
 
             if (size <= MAX_MAP_SIZE) {
-                final MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, size);
+                final MappedByteBuffer mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, size);
 
-                return StandardCharsets.UTF_8.decode(buffer).toString().lines().toList();
+                return StandardCharsets.UTF_8.decode(mappedByteBuffer).toString().lines().toList();
             }
 
             final StringBuilder stringBuilder = new StringBuilder(MAX_MAP_SIZE);
@@ -146,8 +146,9 @@ public class UtilFile {
                 final long remaining = size - position;
                 final long mapSize = Math.min(MAX_MAP_SIZE, remaining);
 
-                final MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, position, mapSize);
-                stringBuilder.append(StandardCharsets.UTF_8.decode(buffer));
+                final MappedByteBuffer mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, position, mapSize);
+
+                stringBuilder.append(StandardCharsets.UTF_8.decode(mappedByteBuffer));
 
                 position += mapSize;
             }
