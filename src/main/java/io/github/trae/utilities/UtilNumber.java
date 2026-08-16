@@ -3,6 +3,8 @@ package io.github.trae.utilities;
 import lombok.experimental.UtilityClass;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -14,12 +16,18 @@ public class UtilNumber {
     /**
      * Formats a number using the specified {@link java.text.DecimalFormat} pattern.
      *
+     * <p>Formatting is locale-independent: {@link java.util.Locale#ROOT} symbols are used, so the
+     * decimal separator is always {@code .} and the grouping separator always {@code ,}, regardless
+     * of the default locale of the host.
+     *
      * @param format the decimal format pattern (e.g. {@code "#.##"}, {@code "#,###.00"})
      * @param value  the number to format
      * @return the formatted number as a string
+     * @throws IllegalArgumentException if {@code format} is not a valid pattern
+     * @throws NullPointerException     if {@code format} or {@code value} is {@code null}
      */
     public static String format(final String format, final Number value) {
-        return new DecimalFormat(format).format(value);
+        return new DecimalFormat(format, DecimalFormatSymbols.getInstance(Locale.ROOT)).format(value);
     }
 
     /**
