@@ -16,6 +16,10 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+
+        <lombok.version>1.18.46</lombok.version>
+        <slf4j.version>2.0.17</slf4j.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -32,22 +36,15 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.46</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Flogger -->
+        <!-- SLF4J -->
         <dependency>
-            <groupId>com.google.flogger</groupId>
-            <artifactId>flogger</artifactId>
-            <version>0.9</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.flogger</groupId>
-            <artifactId>flogger-system-backend</artifactId>
-            <version>0.9</version>
-            <scope>compile</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <!-- Agron2 -->

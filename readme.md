@@ -26,7 +26,7 @@ Built for modern Java (Java 21+).
 - Inline collection and map initialization helpers
 - Thread-safe string transformations with built-in caching (title-casing, delimiter stripping, camelCase expansion)
 - String null/blank checking and key-value pair formatting
-- Static logging wrapper around Google Flogger with configurable logger instance
+- Static logging wrapper around SLF4J with configurable logger instance
 - Human-readable duration formatting with best-fit unit resolution and configurable decimal precision
 - Elapsed time checks against a millisecond timestamp
 - Generic pair types (Pair, TriPair, QuadPair) for lightweight data grouping
@@ -44,10 +44,23 @@ The following is only needed at compile time for annotation processing and is ex
 <dependency>
     <groupId>org.projectlombok</groupId>
     <artifactId>lombok</artifactId>
-    <version>1.18.36</version>
+    <version>1.18.46</version>
     <scope>provided</scope>
 </dependency>
 ```
+
+Utilities logs through the SLF4J API only, so your application must supply an SLF4J binding at runtime. Without one, SLF4J falls back to a no-op and nothing is logged. Most hosts already provide a binding, such as Spring Boot via Logback or a Paper/Velocity server via its own logging backend, in which case nothing further is needed. For a plain application, add one:
+
+```xml
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.5.18</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+Only ever include a single binding. Multiple bindings on the classpath cause SLF4J to warn and pick one arbitrarily.
 
 ---
 
@@ -55,18 +68,13 @@ The following is only needed at compile time for annotation processing and is ex
 
 Utilities includes several dependencies that are automatically included when you install the library.
 
-- [Google Flogger](https://github.com/google/flogger) – Fluent logging API used internally by `UtilLogger`.
-- [Argon2 JVM](https://github.com/phxql/argon2-jvm) – Argon2 password hashing implementation used internally by `UtilArgon`.
+- [SLF4J API](https://www.slf4j.org): Logging facade used internally by `UtilLogger`.
+- [Argon2 JVM](https://github.com/phxql/argon2-jvm): Argon2 password hashing implementation used internally by `UtilArgon`.
 
 ```xml
 <dependency>
-    <groupId>com.google.flogger</groupId>
-    <artifactId>flogger</artifactId>
-</dependency>
-
-<dependency>
-    <groupId>com.google.flogger</groupId>
-    <artifactId>flogger-system-backend</artifactId>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
 </dependency>
 
 <dependency>
@@ -108,7 +116,7 @@ Add the dependency to your Maven project:
 | `UtilJava` | Safe casting and inline collection/map initialization |
 | `UtilString` | Thread-safe string transformations (title-casing, delimiter stripping, camelCase expansion) with caching |
 | `UtilTime` | Human-readable duration formatting and elapsed time checks |
-| `UtilLogger` | Static logging wrapper around Google Flogger with configurable logger instance |
+| `UtilLogger` | Static logging wrapper around SLF4J with configurable logger instance |
 
 ## Data Types
 
