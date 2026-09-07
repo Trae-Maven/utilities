@@ -18,7 +18,7 @@ public class UtilTime {
      * @return a formatted string such as {@code "5 minutes"} or {@code "5.0 minutes"}
      */
     public static String getTime(final long duration, final TimeUnit timeUnit, final int trim) {
-        return TimeUnit.format(duration * timeUnit.getDuration(), trim);
+        return TimeUnit.format(duration * timeUnit.getDuration(), trim, true);
     }
 
     /**
@@ -40,7 +40,7 @@ public class UtilTime {
      * @return a formatted string such as {@code "5.0 minutes"}
      */
     public static String getTime(final long duration, final int trim) {
-        return TimeUnit.format(duration, trim);
+        return TimeUnit.format(duration, trim, true);
     }
 
     /**
@@ -50,7 +50,59 @@ public class UtilTime {
      * @return a formatted string such as {@code "5 minutes"}
      */
     public static String getTime(final long duration) {
-        return TimeUnit.format(duration, 0);
+        return TimeUnit.format(duration, 0, true);
+    }
+
+    /**
+     * Formats a duration into a human-readable string using the best-fit {@link TimeUnit}, never
+     * expressing it in milliseconds.
+     * <p>
+     * The same as {@link #getTime(long, TimeUnit, int)} except that a sub-second duration is
+     * expressed in seconds rather than milliseconds, which reads better anywhere a person sees the
+     * result rather than a log.
+     *
+     * @param duration the raw duration value
+     * @param timeUnit the {@link TimeUnit} of {@code duration}
+     * @param trim     decimal places to include; {@code 0} produces whole numbers
+     * @return a formatted string such as {@code "5 minutes"} or {@code "5.0 minutes"}
+     */
+    public static String getReadableTime(final long duration, final TimeUnit timeUnit, final int trim) {
+        return TimeUnit.format(duration * timeUnit.getDuration(), trim, false);
+    }
+
+    /**
+     * Formats a duration into a human-readable string with no decimal places, never expressing it in
+     * milliseconds.
+     *
+     * @param duration the raw duration value
+     * @param timeUnit the {@link TimeUnit} of {@code duration}
+     * @return a formatted string such as {@code "5 minutes"}
+     */
+    public static String getReadableTime(final long duration, final TimeUnit timeUnit) {
+        return getReadableTime(duration, timeUnit, 0);
+    }
+
+    /**
+     * Formats a millisecond duration into a human-readable string using the best-fit
+     * {@link TimeUnit}, never expressing it in milliseconds.
+     *
+     * @param duration the duration in milliseconds
+     * @param trim     decimal places to include; {@code 0} produces whole numbers
+     * @return a formatted string such as {@code "5.0 minutes"}
+     */
+    public static String getReadableTime(final long duration, final int trim) {
+        return TimeUnit.format(duration, trim, false);
+    }
+
+    /**
+     * Formats a millisecond duration into a human-readable string using the best-fit
+     * {@link TimeUnit}, never expressing it in milliseconds.
+     *
+     * @param duration the duration in milliseconds
+     * @return a formatted string such as {@code "5 minutes"}
+     */
+    public static String getReadableTime(final long duration) {
+        return TimeUnit.format(duration, 0, false);
     }
 
     /**

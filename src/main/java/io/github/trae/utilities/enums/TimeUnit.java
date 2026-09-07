@@ -84,8 +84,11 @@ public enum TimeUnit implements ITimeUnit {
      * @return a formatted string such as {@code "500ms"}, {@code "5 seconds"},
      * {@code "1 minute"}, {@code "1.5 hours"}, or {@code "2 years"}
      */
-    public static String format(final long duration, final int trim) {
-        final TimeUnit timeUnit = getByDuration(duration);
+    public static String format(final long duration, final int trim, final boolean showMilliseconds) {
+        TimeUnit timeUnit = getByDuration(duration);
+        if (!showMilliseconds && timeUnit == MILLISECONDS) {
+            timeUnit = SECONDS;
+        }
 
         final double value = (double) duration / timeUnit.getDuration();
         final long rounded = Math.round(value);

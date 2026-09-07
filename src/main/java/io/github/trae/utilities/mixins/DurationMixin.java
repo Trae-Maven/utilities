@@ -20,6 +20,6 @@ public interface DurationMixin {
      * @return a formatted duration string
      */
     default String getDurationString() {
-        return UtilTime.getTime(this.getDuration(), 1);
+        return UtilTime.getReadableTime(this.getDuration(), 1);
     }
 }

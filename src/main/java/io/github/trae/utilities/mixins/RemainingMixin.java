@@ -29,6 +29,6 @@ public interface RemainingMixin extends SystemTimeMixin, DurationMixin {
      * @return a formatted remaining duration string
      */
     default String getRemainingString() {
-        return UtilTime.getTime(this.getRemaining(), 1);
+        return UtilTime.getReadableTime(this.getRemaining(), 1);
     }
 }
