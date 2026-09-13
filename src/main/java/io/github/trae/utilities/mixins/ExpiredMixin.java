@@ -13,7 +13,8 @@ public interface ExpiredMixin extends SystemTimeMixin, DurationMixin {
     /**
      * Returns whether the duration has fully elapsed since {@link #getSystemTime()}.
      *
-     * <p>Equivalent to {@code System.currentTimeMillis() >= getSystemTime() + getDuration()}.
+     * <p>A duration of {@code -1} never elapses, and one of {@code 0} has always elapsed. Anything
+     * else compares against the wall clock.
      *
      * @return {@code true} if the duration has elapsed; {@code false} otherwise
      */

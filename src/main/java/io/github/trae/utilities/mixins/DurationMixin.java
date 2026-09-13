@@ -15,11 +15,16 @@ public interface DurationMixin {
     /**
      * Returns the duration formatted as a human-readable string.
      *
-     * <p>Uses one decimal place and the best-fit time unit, e.g. {@code "5.0 minutes"}.
+     * <p>Uses one decimal place and the best-fit time unit, e.g. {@code "5.0 minutes"}. A permanent
+     * duration of {@code -1} reads as {@code "Permanent"} rather than as a figure.
      *
      * @return a formatted duration string
      */
     default String getDurationString() {
+        if (this.getDuration() == -1L) {
+            return "Permanent";
+        }
+
         return UtilTime.getReadableTime(this.getDuration(), 1);
     }
 }
