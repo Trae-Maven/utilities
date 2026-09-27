@@ -4,9 +4,6 @@ import lombok.experimental.UtilityClass;
 
 import java.util.function.Predicate;
 
-/**
- * Utility class providing methods for validating and matching character types within strings.
- */
 @UtilityClass
 public class UtilType {
 
@@ -50,5 +47,77 @@ public class UtilType {
      */
     public static boolean isNumeric(final String input) {
         return isAllMatch(input, Character::isDigit);
+    }
+
+    /**
+     * Checks whether the specified input represents a valid {@link Integer} value.
+     *
+     * @param input The input to check.
+     * @return {@code true} if the input can be parsed as an integer; otherwise {@code false}.
+     */
+    public static boolean isInteger(final String input) {
+        if (!UtilString.isEmpty(input)) {
+            try {
+                Integer.parseInt(input);
+                return true;
+            } catch (final NumberFormatException ignored) {
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks whether the specified input represents a valid {@link Double} value.
+     *
+     * @param input The input to check.
+     * @return {@code true} if the input can be parsed as a double; otherwise {@code false}.
+     */
+    public static boolean isDouble(final String input) {
+        if (!UtilString.isEmpty(input)) {
+            try {
+                Double.parseDouble(input);
+                return true;
+            } catch (final NumberFormatException ignored) {
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks whether the specified input represents a valid {@link Float} value.
+     *
+     * @param input The input to check.
+     * @return {@code true} if the input can be parsed as a float; otherwise {@code false}.
+     */
+    public static boolean isFloat(final String input) {
+        if (!UtilString.isEmpty(input)) {
+            try {
+                Float.parseFloat(input);
+                return true;
+            } catch (final NumberFormatException ignored) {
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks whether the specified input represents a valid {@link Long} value.
+     *
+     * @param input The input to check.
+     * @return {@code true} if the input can be parsed as a long; otherwise {@code false}.
+     */
+    public static boolean isLong(final String input) {
+        if (!UtilString.isEmpty(input)) {
+            try {
+                Long.parseLong(input);
+                return true;
+            } catch (final NumberFormatException ignored) {
+            }
+        }
+
+        return false;
     }
 }
