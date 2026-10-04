@@ -97,7 +97,7 @@ public abstract class AbstractSearchEngine<Type, Receiver> {
             }
         }
 
-        this.updateList(resultList, input);
+        this.updateList(resultList, receiver, input);
 
         if (resultList.size() == 1) {
             return Optional.of(resultList.getFirst());
@@ -128,12 +128,14 @@ public abstract class AbstractSearchEngine<Type, Receiver> {
     /**
      * Hook invoked on the fuzzy match list before it is resolved or reported, allowing subclasses to
      * sort, deduplicate or prune the results in place, such as ranking matches by closeness to the
-     * input. Does nothing by default.
+     * input or removing candidates the receiver should not see. Does nothing by default.
      *
      * @param resultList the mutable list of fuzzy matches
+     * @param receiver   the receiver the search is being run for, may be null if {@code inform} is
+     *                   false or the overriding {@link #message(Object, String, String)} ignores it
      * @param input      the search input the matches were collected for
      */
-    protected void updateList(final List<Type> resultList, final String input) {
+    protected void updateList(final List<Type> resultList, final Receiver receiver, final String input) {
     }
 
     /**
