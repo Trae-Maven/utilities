@@ -97,7 +97,7 @@ public abstract class AbstractSearchEngine<Type, Receiver> {
             }
         }
 
-        this.updateList(resultList);
+        this.updateList(resultList, input);
 
         if (resultList.size() == 1) {
             return Optional.of(resultList.getFirst());
@@ -109,7 +109,7 @@ public abstract class AbstractSearchEngine<Type, Receiver> {
             if (!resultList.isEmpty()) {
                 final List<String> matchList = UtilJava.createCollection(new ArrayList<>(), list -> {
                     for (int i = 0; i < Math.min(maxResultLimit, resultList.size()); i++) {
-                        list.add(this.getTypeFormat(resultList.get(i)));
+                        list.add(this.getTypeFormat(resultList.get(i), receiver));
                     }
                 });
 
@@ -127,11 +127,13 @@ public abstract class AbstractSearchEngine<Type, Receiver> {
 
     /**
      * Hook invoked on the fuzzy match list before it is resolved or reported, allowing subclasses to
-     * sort, deduplicate or prune the results in place. Does nothing by default.
+     * sort, deduplicate or prune the results in place, such as ranking matches by closeness to the
+     * input. Does nothing by default.
      *
      * @param resultList the mutable list of fuzzy matches
+     * @param input      the search input the matches were collected for
      */
-    protected void updateList(final List<Type> resultList) {
+    protected void updateList(final List<Type> resultList, final String input) {
     }
 
     /**
@@ -176,10 +178,13 @@ public abstract class AbstractSearchEngine<Type, Receiver> {
     /**
      * Formats a candidate for display in an ambiguous-result message.
      *
-     * @param type the candidate to format
+     * @param type     the candidate to format
+     * @param receiver the receiver the message is being built for, allowing per-receiver formatting
+     *                 such as visibility or permission-based detail, may be null if {@code inform} is
+     *                 false or the overriding {@link #message(Object, String, String)} ignores it
      * @return the display form of the candidate
      */
-    protected abstract String getTypeFormat(final Type type);
+    protected abstract String getTypeFormat(final Type type, final Receiver receiver);
 
     /**
      * Tests whether a candidate is an exact match for the input, short-circuiting the search.
