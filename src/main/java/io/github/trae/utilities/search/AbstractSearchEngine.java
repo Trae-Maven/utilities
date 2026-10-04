@@ -104,17 +104,19 @@ public abstract class AbstractSearchEngine<Type, Receiver> {
         }
 
         if (inform) {
-            String message = NOT_FOUND_MESSAGE.formatted(this.getColorFormat(input));
+            String message = NOT_FOUND_MESSAGE.formatted(this.getInputFormat(input));
 
             if (!resultList.isEmpty()) {
                 final List<String> matchList = UtilJava.createCollection(new ArrayList<>(), list -> {
                     for (int i = 0; i < Math.min(maxResultLimit, resultList.size()); i++) {
-                        list.add(this.getTypeFormat(resultList.get(i), receiver));
+                        final Type type = resultList.get(i);
+
+                        list.add(this.getTypeFormat(type, this.getTypeName(type, receiver), receiver));
                     }
                 });
 
                 message = FOUND_MESSAGE.formatted(
-                        this.getColorFormat(String.valueOf(resultList.size())),
+                        this.getInputFormat(String.valueOf(resultList.size())),
                         String.join(this.getMatchSeparator(), matchList)
                 );
             }
@@ -148,17 +150,6 @@ public abstract class AbstractSearchEngine<Type, Receiver> {
     }
 
     /**
-     * Applies emphasis to a value interpolated into a message, such as a colour code on a chat
-     * platform. Returns the input unchanged by default.
-     *
-     * @param string the value to format
-     * @return the formatted value
-     */
-    protected String getColorFormat(final String string) {
-        return string;
-    }
-
-    /**
      * Dispatches an informational message to the receiver, prefixing it with the engine name when one
      * is set. Logs at info level by default, so subclasses should override this to reach a real
      * receiver.
@@ -178,15 +169,42 @@ public abstract class AbstractSearchEngine<Type, Receiver> {
     }
 
     /**
-     * Formats a candidate for display in an ambiguous-result message.
+     * Applies emphasis to a value interpolated into a message, such as a colour code on a chat
+     * platform. Implementations should neutralise any markup in the value before styling it, since it
+     * may be the raw search input. Returns the value unchanged by default.
+     *
+     * @param string the value to format, such as the search input or result count
+     * @return the formatted value
+     */
+    protected String getInputFormat(final String string) {
+        return string;
+    }
+
+    /**
+     * Supplies the raw, unformatted display name of a candidate, such as {@code clan.getName()}. It
+     * must contain no markup, as it is passed to {@link #getTypeFormat(Object, String, Object)} as
+     * untrusted text.
+     *
+     * @param type     the candidate to name
+     * @param receiver the receiver the message is being built for, allowing per-receiver naming such
+     *                 as visibility or permission-based detail, may be null if the overriding
+     *                 {@link #message(Object, String, String)} ignores it
+     * @return the raw display name of the candidate
+     */
+    protected abstract String getTypeName(final Type type, final Receiver receiver);
+
+    /**
+     * Formats a candidate's raw name for display in an ambiguous-result message. Implementations
+     * should neutralise any markup in the name before styling it, since it may be player-controlled.
      *
      * @param type     the candidate to format
+     * @param name     the candidate's raw display name from {@link #getTypeName(Object, Object)}
      * @param receiver the receiver the message is being built for, allowing per-receiver formatting
-     *                 such as visibility or permission-based detail, may be null if {@code inform} is
-     *                 false or the overriding {@link #message(Object, String, String)} ignores it
+     *                 such as visibility or permission-based detail, may be null if the overriding
+     *                 {@link #message(Object, String, String)} ignores it
      * @return the display form of the candidate
      */
-    protected abstract String getTypeFormat(final Type type, final Receiver receiver);
+    protected abstract String getTypeFormat(final Type type, final String name, final Receiver receiver);
 
     /**
      * Tests whether a candidate is an exact match for the input, short-circuiting the search.
